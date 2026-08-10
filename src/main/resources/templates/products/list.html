@@ -29,8 +29,30 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-6">
         
+        <!-- Flash Alert Success -->
+        <div th:if="${success != null}" class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center justify-between shadow-lg shadow-emerald-500/5 animate-fade-in">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
+                    ✓
+                </div>
+                <span class="text-sm font-medium" th:text="${success}">Operación realizada con éxito.</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-200 transition text-lg px-2">✕</button>
+        </div>
+
+        <!-- Flash Alert Error -->
+        <div th:if="${error != null}" class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between shadow-lg shadow-rose-500/5 animate-fade-in">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold">
+                    ⚠️
+                </div>
+                <span class="text-sm font-medium" th:text="${error}">Ha ocurrido un error.</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-200 transition text-lg px-2">✕</button>
+        </div>
+
         <!-- Header Banner -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
             <div>
@@ -65,6 +87,7 @@
                             <th class="py-4 px-6 text-right">Precio</th>
                             <th class="py-4 px-6">Stock</th>
                             <th class="py-4 px-6">Fecha Creación</th>
+                            <th class="py-4 px-6 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-700/40 text-sm">
@@ -83,11 +106,21 @@
                                 </span>
                             </td>
                             <td class="py-4 px-6 text-slate-400 text-xs font-mono" th:text="${product.createdAt != null ? #temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">2026-08-10 13:30</td>
+                            <td class="py-4 px-6 text-center">
+                                <button type="button"
+                                        th:onclick="openDeleteModal([[${product.id}]], [[${product.name}]])"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-200 shadow-sm cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Eliminar
+                                </button>
+                            </td>
                         </tr>
 
                         <!-- Empty State -->
                         <tr th:if="${#lists.isEmpty(products)}">
-                            <td colspan="6" class="py-12 text-center text-slate-400 space-y-3">
+                            <td colspan="7" class="py-12 text-center text-slate-400 space-y-3">
                                 <div class="text-4xl">📭</div>
                                 <p class="text-base font-medium">No hay productos registrados en el catálogo.</p>
                             </td>
@@ -98,6 +131,54 @@
         </div>
 
     </main>
+
+    <!-- Interactive Delete Confirmation Modal -->
+    <div id="deleteModal" onclick="if(event.target === this) closeDeleteModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 relative transform transition-all border-t-4 border-t-rose-500">
+            
+            <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                🗑️
+            </div>
+
+            <div class="text-center space-y-2">
+                <h3 class="text-xl font-bold text-slate-100">¿Confirmar Eliminación?</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    ¿Estás seguro de que deseas eliminar el producto <span id="modalProductName" class="font-bold text-slate-100 underline decoration-rose-500/50"></span>?
+                </p>
+                <p class="text-xs text-rose-400/80 font-medium pt-1">
+                    ⚠️ Esta acción no se puede deshacer y eliminará el registro de PostgreSQL.
+                </p>
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-semibold transition cursor-pointer">
+                    Cancelar
+                </button>
+                <a id="modalConfirmBtn" href="#" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-sm font-bold text-center shadow-lg shadow-rose-600/30 transition cursor-pointer">
+                    Sí, Eliminar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal JavaScript Handler -->
+    <script>
+        function openDeleteModal(id, productName) {
+            document.getElementById('modalProductName').textContent = productName;
+            document.getElementById('modalConfirmBtn').href = '/products/delete/' + id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDeleteModal();
+            }
+        });
+    </script>
 
     <!-- Footer -->
     <footer class="bg-slate-800/40 border-t border-slate-800 py-6 text-center text-sm text-slate-500">
