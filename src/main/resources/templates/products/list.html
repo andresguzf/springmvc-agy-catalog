@@ -62,7 +62,7 @@
                             <th class="py-4 px-6">ID</th>
                             <th class="py-4 px-6">Producto</th>
                             <th class="py-4 px-6">Descripción</th>
-                            <th class="py-4 px-6">Precio</th>
+                            <th class="py-4 px-6 text-right">Precio</th>
                             <th class="py-4 px-6">Stock</th>
                             <th class="py-4 px-6">Fecha Creación</th>
                         </tr>
@@ -75,7 +75,7 @@
                                 <span class="font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors" th:text="${product.name}">Laptop Gaming</span>
                             </td>
                             <td class="py-4 px-6 text-slate-400 max-w-xs truncate" th:text="${product.description}">Descripción del producto...</td>
-                            <td class="py-4 px-6 font-semibold text-emerald-400 font-mono" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</td>
+                            <td class="py-4 px-6 text-right font-semibold text-emerald-400 font-mono" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</td>
                             <td class="py-4 px-6">
                                 <span th:class="${product.stock > 10 ? 'px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20'}"
                                       th:text="${product.stock + ' unids.'}">
