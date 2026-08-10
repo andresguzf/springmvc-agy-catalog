@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{layout/layout :: head(${title})}"></head>
+<head th:replace="~{layouts/layout :: head(${title})}"></head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
     <!-- Header / Navbar Fragment -->
-    <header th:replace="~{layout/layout :: header('products')}"></header>
+    <header th:replace="~{layout/header :: header('products')}"></header>
 
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-6">
@@ -159,7 +159,7 @@
     </script>
 
     <!-- Footer Fragment -->
-    <footer th:replace="~{layout/layout :: footer}"></footer>
+    <footer th:replace="~{layout/footer :: footer}"></footer>
 
 </body>
 </html>
