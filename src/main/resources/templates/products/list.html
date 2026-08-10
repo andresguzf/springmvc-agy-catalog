@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:replace="~{layouts/layout :: head(${title})}"></head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
-
-    <!-- Header / Navbar Fragment -->
-    <header th:replace="~{layout/header :: header('products')}"></header>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      th:replace="~{layouts/layout :: layout(${title}, 'products', ~{::main})}">
+<head>
+    <title>Productos</title>
+</head>
+<body>
 
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-6">
@@ -17,7 +17,7 @@
                 </div>
                 <span class="text-sm font-medium" th:text="${success}">Operación realizada con éxito.</span>
             </div>
-            <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-200 transition text-lg px-2">✕</button>
+            <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-200 transition text-lg px-2 font-bold cursor-pointer">✕</button>
         </div>
 
         <!-- Flash Alert Error -->
@@ -28,7 +28,7 @@
                 </div>
                 <span class="text-sm font-medium" th:text="${error}">Ha ocurrido un error.</span>
             </div>
-            <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-200 transition text-lg px-2">✕</button>
+            <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-200 transition text-lg px-2 font-bold cursor-pointer">✕</button>
         </div>
 
         <!-- Header Banner -->
@@ -108,58 +108,54 @@
             </div>
         </div>
 
-    </main>
+        <!-- Interactive Delete Confirmation Modal -->
+        <div id="deleteModal" onclick="if(event.target === this) closeDeleteModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden transition-opacity duration-300">
+            <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 relative transform transition-all border-t-4 border-t-rose-500">
+                
+                <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                    🗑️
+                </div>
 
-    <!-- Interactive Delete Confirmation Modal -->
-    <div id="deleteModal" onclick="if(event.target === this) closeDeleteModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden transition-opacity duration-300">
-        <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 relative transform transition-all border-t-4 border-t-rose-500">
-            
-            <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-2xl mx-auto shadow-inner">
-                🗑️
-            </div>
+                <div class="text-center space-y-2">
+                    <h3 class="text-xl font-bold text-slate-100">¿Confirmar Eliminación?</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        ¿Estás seguro de que deseas eliminar el producto <span id="modalProductName" class="font-bold text-slate-100 underline decoration-rose-500/50"></span>?
+                    </p>
+                    <p class="text-xs text-rose-400/80 font-medium pt-1">
+                        ⚠️ Esta acción no se puede deshacer y eliminará el registro de PostgreSQL.
+                    </p>
+                </div>
 
-            <div class="text-center space-y-2">
-                <h3 class="text-xl font-bold text-slate-100">¿Confirmar Eliminación?</h3>
-                <p class="text-sm text-slate-400 leading-relaxed">
-                    ¿Estás seguro de que deseas eliminar el producto <span id="modalProductName" class="font-bold text-slate-100 underline decoration-rose-500/50"></span>?
-                </p>
-                <p class="text-xs text-rose-400/80 font-medium pt-1">
-                    ⚠️ Esta acción no se puede deshacer y eliminará el registro de PostgreSQL.
-                </p>
-            </div>
-
-            <div class="flex items-center gap-3 pt-2">
-                <button type="button" onclick="closeDeleteModal()" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-semibold transition cursor-pointer">
-                    Cancelar
-                </button>
-                <a id="modalConfirmBtn" href="#" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-sm font-bold text-center shadow-lg shadow-rose-600/30 transition cursor-pointer">
-                    Sí, Eliminar
-                </a>
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="button" onclick="closeDeleteModal()" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white text-sm font-semibold transition cursor-pointer">
+                        Cancelar
+                    </button>
+                    <a id="modalConfirmBtn" href="#" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-sm font-bold text-center shadow-lg shadow-rose-600/30 transition cursor-pointer">
+                        Sí, Eliminar
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal JavaScript Handler -->
-    <script>
-        function openDeleteModal(id, productName) {
-            document.getElementById('modalProductName').textContent = productName;
-            document.getElementById('modalConfirmBtn').href = '/products/delete/' + id;
-            document.getElementById('deleteModal').classList.remove('hidden');
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').classList.add('hidden');
-        }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeDeleteModal();
+        <!-- Modal JavaScript Handler -->
+        <script>
+            function openDeleteModal(id, productName) {
+                document.getElementById('modalProductName').textContent = productName;
+                document.getElementById('modalConfirmBtn').href = '/products/delete/' + id;
+                document.getElementById('deleteModal').classList.remove('hidden');
             }
-        });
-    </script>
 
-    <!-- Footer Fragment -->
-    <footer th:replace="~{layout/footer :: footer}"></footer>
+            function closeDeleteModal() {
+                document.getElementById('deleteModal').classList.add('hidden');
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeDeleteModal();
+                }
+            });
+        </script>
+    </main>
 
 </body>
 </html>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head th:fragment="head(title)">
+<html xmlns:th="http://www.thymeleaf.org" lang="es" th:fragment="layout(title, activePage, content)">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">12-springmvc-app</title>
@@ -9,7 +9,14 @@
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
     <!-- Header Fragment Included from layout/header.html -->
-    <header th:replace="~{layout/header :: header('home')}"></header>
+    <header th:replace="~{layout/header :: header(${activePage})}"></header>
+
+    <!-- Main Content Slot Injected from individual templates -->
+    <main th:replace="${content}">
+        <div class="flex-grow flex items-center justify-center p-6 text-slate-400">
+            <p>Contenido por defecto del layout.</p>
+        </div>
+    </main>
 
     <!-- Footer Fragment Included from layout/footer.html -->
     <footer th:replace="~{layout/footer :: footer}"></footer>
