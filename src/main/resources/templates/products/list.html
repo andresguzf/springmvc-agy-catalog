@@ -1,32 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title}">Catálogo de Productos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<head th:replace="~{layout/layout :: head(${title})}"></head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
-    <!-- Header / Navbar -->
-    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <a th:href="@{/}" class="flex items-center space-x-3 group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-bold text-slate-900 text-xl shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-                        12
-                    </div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">
-                        12-springmvc-app
-                    </span>
-                </a>
-            </div>
-            <nav class="flex items-center space-x-6 text-sm font-medium">
-                <a th:href="@{/}" class="text-slate-400 hover:text-slate-200 transition">Inicio</a>
-                <a th:href="@{/products}" class="text-emerald-400 hover:text-emerald-300 transition border-b-2 border-emerald-400 pb-1">Productos</a>
-            </nav>
-        </div>
-    </header>
+    <!-- Header / Navbar Fragment -->
+    <header th:replace="~{layout/layout :: header('products')}"></header>
 
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-6">
@@ -180,10 +158,8 @@
         });
     </script>
 
-    <!-- Footer -->
-    <footer class="bg-slate-800/40 border-t border-slate-800 py-6 text-center text-sm text-slate-500">
-        <p>© 2026 12-springmvc-app. Catálogo gestionado con Spring Boot 4.1 & PostgreSQL.</p>
-    </footer>
+    <!-- Footer Fragment -->
+    <footer th:replace="~{layout/layout :: footer}"></footer>
 
 </body>
 </html>
