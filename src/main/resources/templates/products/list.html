@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Catálogo de Productos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <a th:href="@{/}" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-bold text-slate-900 text-xl shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                        12
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">
+                        12-springmvc-app
+                    </span>
+                </a>
+            </div>
+            <nav class="flex items-center space-x-6 text-sm font-medium">
+                <a th:href="@{/}" class="text-slate-400 hover:text-slate-200 transition">Inicio</a>
+                <a th:href="@{/products}" class="text-emerald-400 hover:text-emerald-300 transition border-b-2 border-emerald-400 pb-1">Productos</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-8">
+        
+        <!-- Header Banner -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Spring Data JPA + PostgreSQL
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-100 tracking-tight">Catálogo de Productos</h1>
+                <p class="text-slate-400 text-sm mt-1">Listado actualizado de inventario registrado en la base de datos PostgreSQL.</p>
+            </div>
+            
+            <div class="flex items-center gap-4 bg-slate-900/60 px-5 py-3 rounded-xl border border-slate-700/40">
+                <div class="text-right">
+                    <span class="text-xs text-slate-400 block font-medium uppercase tracking-wider">Total Productos</span>
+                    <span class="text-2xl font-bold text-emerald-400" th:text="${products.size()}">0</span>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xl font-bold">
+                    📦
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Table Container -->
+        <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl overflow-hidden shadow-xl">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800/90 text-slate-400 text-xs uppercase font-semibold tracking-wider border-b border-slate-700/60">
+                            <th class="py-4 px-6">ID</th>
+                            <th class="py-4 px-6">Producto</th>
+                            <th class="py-4 px-6">Descripción</th>
+                            <th class="py-4 px-6">Precio</th>
+                            <th class="py-4 px-6">Stock</th>
+                            <th class="py-4 px-6">Fecha Creación</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-700/40 text-sm">
+                        <!-- Iteration over products -->
+                        <tr th:each="product : ${products}" class="hover:bg-slate-800/60 transition-colors group">
+                            <td class="py-4 px-6 font-mono text-slate-400 font-semibold" th:text="${'#' + product.id}">#1</td>
+                            <td class="py-4 px-6">
+                                <span class="font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors" th:text="${product.name}">Laptop Gaming</span>
+                            </td>
+                            <td class="py-4 px-6 text-slate-400 max-w-xs truncate" th:text="${product.description}">Descripción del producto...</td>
+                            <td class="py-4 px-6 font-semibold text-emerald-400 font-mono" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</td>
+                            <td class="py-4 px-6">
+                                <span th:class="${product.stock > 10 ? 'px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20'}"
+                                      th:text="${product.stock + ' unids.'}">
+                                    10 unids.
+                                </span>
+                            </td>
+                            <td class="py-4 px-6 text-slate-400 text-xs font-mono" th:text="${product.createdAt != null ? #temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">2026-08-10 13:30</td>
+                        </tr>
+
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(products)}">
+                            <td colspan="6" class="py-12 text-center text-slate-400 space-y-3">
+                                <div class="text-4xl">📭</div>
+                                <p class="text-base font-medium">No hay productos registrados en el catálogo.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800/40 border-t border-slate-800 py-6 text-center text-sm text-slate-500">
+        <p>© 2026 12-springmvc-app. Catálogo gestionado con Spring Boot 4.1 & PostgreSQL.</p>
+    </footer>
+
+</body>
+</html>

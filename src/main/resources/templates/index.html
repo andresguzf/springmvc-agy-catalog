@@ -20,8 +20,8 @@
                 </span>
             </div>
             <nav class="flex items-center space-x-6 text-sm font-medium">
-                <a href="#" class="text-emerald-400 hover:text-emerald-300 transition">Inicio</a>
-                <a href="#" class="text-slate-400 hover:text-slate-200 transition">Documentación</a>
+                <a th:href="@{/}" class="text-emerald-400 hover:text-emerald-300 transition">Inicio</a>
+                <a th:href="@{/products}" class="text-slate-400 hover:text-slate-200 transition">Productos</a>
             </nav>
         </div>
     </header>
@@ -41,6 +41,12 @@
             <p class="text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto" th:text="#{app.description}">
                 Proyecto base Spring Web MVC configurado con Thymeleaf, Tailwind CSS y la skill de Buenas Prácticas de Spring Boot.
             </p>
+
+            <div>
+                <a th:href="@{/products}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 font-bold shadow-lg shadow-emerald-500/20 transition transform hover:-translate-y-0.5">
+                    📦 Ver Catálogo de Productos
+                </a>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left pt-6">
                 <div class="p-6 rounded-2xl bg-slate-800/60 border border-slate-700/50 hover:border-emerald-500/40 transition group">
