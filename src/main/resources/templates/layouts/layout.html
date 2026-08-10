@@ -11,6 +11,9 @@
     <!-- Header Fragment Included from layout/header.html -->
     <header th:replace="~{layout/header :: header(${activePage})}"></header>
 
+    <!-- Global Reusable Flash Alerts Included from layout/alerts.html -->
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
     <!-- Main Content Slot Injected from individual templates -->
     <main th:replace="${content}">
         <div class="flex-grow flex items-center justify-center p-6 text-slate-400">

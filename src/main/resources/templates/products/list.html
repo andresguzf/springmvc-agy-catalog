@@ -8,28 +8,6 @@
 
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-6">
-        
-        <!-- Flash Alert Success -->
-        <div th:if="${success != null}" class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center justify-between shadow-lg shadow-emerald-500/5 animate-fade-in">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
-                    ✓
-                </div>
-                <span class="text-sm font-medium" th:text="${success}">Operación realizada con éxito.</span>
-            </div>
-            <button onclick="this.parentElement.remove()" class="text-emerald-400 hover:text-emerald-200 transition text-lg px-2 font-bold cursor-pointer">✕</button>
-        </div>
-
-        <!-- Flash Alert Error -->
-        <div th:if="${error != null}" class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between shadow-lg shadow-rose-500/5 animate-fade-in">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold">
-                    ⚠️
-                </div>
-                <span class="text-sm font-medium" th:text="${error}">Ha ocurrido un error.</span>
-            </div>
-            <button onclick="this.parentElement.remove()" class="text-rose-400 hover:text-rose-200 transition text-lg px-2 font-bold cursor-pointer">✕</button>
-        </div>
 
         <!-- Header Banner -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
