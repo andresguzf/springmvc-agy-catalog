@@ -30,10 +30,8 @@ public class ProductController {
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes redirect) {
-        Optional<Product> optionalProduct = service.findById(id);
-        if (optionalProduct.isPresent()) {
-            service.deleteById(id);
-            redirect.addFlashAttribute("success", "El producto '" + optionalProduct.get().getName() + "' ha sido eliminado con éxito.");
+        if (service.deleteById(id)) {
+            redirect.addFlashAttribute("success", "El producto ha sido eliminado con éxito.");
         } else {
             redirect.addFlashAttribute("error", "El producto especificado no existe.");
         }
