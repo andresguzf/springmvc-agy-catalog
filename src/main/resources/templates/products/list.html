@@ -20,13 +20,19 @@
                 <p class="text-slate-400 text-sm mt-1">Listado actualizado de inventario registrado en la base de datos PostgreSQL.</p>
             </div>
             
-            <div class="flex items-center gap-4 bg-slate-900/60 px-5 py-3 rounded-xl border border-slate-700/40">
-                <div class="text-right">
-                    <span class="text-xs text-slate-400 block font-medium uppercase tracking-wider">Total Productos</span>
-                    <span class="text-2xl font-bold text-emerald-400" th:text="${products.size()}">0</span>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xl font-bold">
-                    📦
+            <div class="flex items-center gap-4">
+                <a th:href="@{/products/form}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 font-bold text-sm shadow-lg shadow-emerald-500/20 transition transform hover:-translate-y-0.5">
+                    ✨ Crear Producto
+                </a>
+
+                <div class="flex items-center gap-4 bg-slate-900/60 px-5 py-3 rounded-xl border border-slate-700/40">
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block font-medium uppercase tracking-wider">Total Productos</span>
+                        <span class="text-2xl font-bold text-emerald-400" th:text="${products.size()}">0</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xl font-bold">
+                        📦
+                    </div>
                 </div>
             </div>
         </div>

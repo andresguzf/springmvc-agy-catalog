@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      th:replace="~{layouts/layout :: layout(${title}, 'products', ~{::main})}">
+<head>
+    <title>Crear Producto</title>
+</head>
+<body>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-3xl w-full mx-auto px-6 py-10 space-y-8">
+        
+        <!-- Header Banner -->
+        <div class="flex items-center justify-between bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Formulario de Registro
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-100 tracking-tight">Crear Nuevo Producto</h1>
+                <p class="text-slate-400 text-sm mt-1">Completa los campos para almacenar el nuevo producto en PostgreSQL.</p>
+            </div>
+            <a th:href="@{/products}" class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition flex items-center gap-2">
+                ← Volver al Listado
+            </a>
+        </div>
+
+        <!-- Product Form Card -->
+        <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-8 shadow-xl">
+            <form th:action="@{/products/form}" th:object="${product}" method="post" class="space-y-6">
+
+                <!-- Hidden ID for edit support -->
+                <input type="hidden" th:field="*{id}" />
+
+                <!-- Nombre -->
+                <div class="space-y-2">
+                    <label for="name" class="block text-sm font-semibold text-slate-200">Nombre del Producto <span class="text-rose-400">*</span></label>
+                    <input type="text" id="name" th:field="*{name}"
+                           placeholder="Ej: Teclado Mecánico RGB"
+                           th:class="${#fields.hasErrors('name') ? 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-rose-500 text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition' : 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition'}" />
+                    <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-xs text-rose-400 font-medium pt-1">Error de validación</p>
+                </div>
+
+                <!-- Descripción -->
+                <div class="space-y-2">
+                    <label for="description" class="block text-sm font-semibold text-slate-200">Descripción <span class="text-rose-400">*</span></label>
+                    <textarea id="description" th:field="*{description}" rows="3"
+                              placeholder="Detalla las características principales del producto..."
+                              th:class="${#fields.hasErrors('description') ? 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-rose-500 text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition' : 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition'}"></textarea>
+                    <p th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-xs text-rose-400 font-medium pt-1">Error de validación</p>
+                </div>
+
+                <!-- Grid Precio & Stock -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <!-- Precio -->
+                    <div class="space-y-2">
+                        <label for="price" class="block text-sm font-semibold text-slate-200">Precio ($ USD) <span class="text-rose-400">*</span></label>
+                        <input type="number" step="0.01" id="price" th:field="*{price}"
+                               placeholder="0.00"
+                               th:class="${#fields.hasErrors('price') ? 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-rose-500 text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition' : 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition'}" />
+                        <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="text-xs text-rose-400 font-medium pt-1">Error de validación</p>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="space-y-2">
+                        <label for="stock" class="block text-sm font-semibold text-slate-200">Cantidad en Stock <span class="text-rose-400">*</span></label>
+                        <input type="number" id="stock" th:field="*{stock}"
+                               placeholder="0"
+                               th:class="${#fields.hasErrors('stock') ? 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-rose-500 text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500/50 transition' : 'w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition'}" />
+                        <p th:if="${#fields.hasErrors('stock')}" th:errors="*{stock}" class="text-xs text-rose-400 font-medium pt-1">Error de validación</p>
+                    </div>
+                </div>
+
+                <!-- Form Action Buttons -->
+                <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-700/60">
+                    <a th:href="@{/products}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 font-bold text-sm shadow-lg shadow-emerald-500/20 transition transform hover:-translate-y-0.5 cursor-pointer">
+                        💾 Guardar Producto
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    </main>
+
+</body>
+</html>
