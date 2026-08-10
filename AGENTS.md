@@ -43,6 +43,8 @@ src/main/java/com/andres/course/agy/springboot/springmvc/app/
 └── services/
 ```
 
+- **Regla de Repositorios (Spring Data JPA):** Las interfaces que extiendan `JpaRepository` o `CrudRepository` **NO** deben anotarse con `@Repository`, ya que Spring Data JPA las registra como componentes de Spring automáticamente.
+
 ---
 
 ## 🚀 Comandos de Construcción y Verificación

@@ -67,7 +67,8 @@ Sigue estos requisitos específicos para cada capa:
 
 ### B. Repositories
 - Define los repositorios como interfaces.
-- Extiende de `JpaRepository<NombreEntidad, TipoId>`.
+- Extiende de `JpaRepository<NombreEntidad, TipoId>` o `CrudRepository<NombreEntidad, TipoId>`.
+- **NO** uses la anotación `@Repository` en interfaces que extiendan de `JpaRepository` o `CrudRepository`, ya que Spring Data JPA las detecta y registra como beans de Spring automáticamente.
 - Colócalos en el paquete `repositories`.
 
 ### C. DTOs (Data Transfer Objects)
