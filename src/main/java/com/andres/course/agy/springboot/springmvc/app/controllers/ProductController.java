@@ -23,7 +23,7 @@ public class ProductController {
         this.service = service;
     }
 
-    @GetMapping({"", "/", "/list"})
+    @GetMapping({ "", "/", "/list" })
     public String list(Model model) {
         model.addAttribute("title", "Catálogo de Productos | Spring Web MVC");
         model.addAttribute("products", service.findAll());
@@ -50,15 +50,18 @@ public class ProductController {
     }
 
     @PostMapping("/form")
-    public String save(@Valid @ModelAttribute("product") Product product, BindingResult result, Model model, RedirectAttributes redirect) {
+    public String save(@Valid @ModelAttribute("product") Product product, BindingResult result, Model model,
+            RedirectAttributes redirect) {
         if (result.hasErrors()) {
-            String pageTitle = (product.getId() != null) ? "Editar Producto | Spring Web MVC" : "Crear Nuevo Producto | Spring Web MVC";
+            String pageTitle = (product.getId() != null) ? "Editar Producto | Spring Web MVC"
+                    : "Crear Nuevo Producto | Spring Web MVC";
             model.addAttribute("title", pageTitle);
             return "products/form";
         }
-        String actionMessage = (product.getId() != null) ? "actualizado" : "guardado";
+        String actionMessage = (product.getId() != null) ? "actualizado" : "creado";
         service.save(product);
-        redirect.addFlashAttribute("success", "El producto '" + product.getName() + "' ha sido " + actionMessage + " con éxito en PostgreSQL.");
+        redirect.addFlashAttribute("success",
+                "El producto '" + product.getName() + "' ha sido " + actionMessage + " con éxito en PostgreSQL.");
         return "redirect:/products";
     }
 

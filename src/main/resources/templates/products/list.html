@@ -43,31 +43,29 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-800/90 text-slate-400 text-xs uppercase font-semibold tracking-wider border-b border-slate-700/60">
-                            <th class="py-4 px-6">ID</th>
+                            <th class="py-4 px-6 whitespace-nowrap">ID</th>
                             <th class="py-4 px-6">Producto</th>
                             <th class="py-4 px-6">Descripción</th>
-                            <th class="py-4 px-6 text-right">Precio</th>
-                            <th class="py-4 px-6">Stock</th>
-                            <th class="py-4 px-6">Fecha Creación</th>
-                            <th class="py-4 px-6 text-center">Acciones</th>
+                            <th class="py-4 px-6 text-right whitespace-nowrap">Precio</th>
+                            <th class="py-4 px-6 whitespace-nowrap">Stock</th>
+                            <th class="py-4 px-6 whitespace-nowrap">Fecha Creación</th>
+                            <th class="py-4 px-6 text-center whitespace-nowrap">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-700/40 text-sm">
                         <!-- Iteration over products -->
                         <tr th:each="product : ${products}" class="hover:bg-slate-800/60 transition-colors group">
-                            <td class="py-4 px-6 font-mono text-slate-400 font-semibold" th:text="${'#' + product.id}">#1</td>
-                            <td class="py-4 px-6">
-                                <span class="font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors" th:text="${product.name}">Laptop Gaming</span>
-                            </td>
+                            <td class="py-4 px-6 font-mono text-slate-400 font-semibold whitespace-nowrap" th:text="${'#' + product.id}">#1</td>
+                            <td class="py-4 px-6 font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors" th:text="${product.name}">Laptop Gaming</td>
                             <td class="py-4 px-6 text-slate-400 max-w-xs truncate" th:text="${product.description}">Descripción del producto...</td>
-                            <td class="py-4 px-6 text-right font-semibold text-emerald-400 font-mono" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</td>
-                            <td class="py-4 px-6">
-                                <span th:class="${product.stock > 10 ? 'px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20'}"
+                            <td class="py-4 px-6 text-right font-semibold text-emerald-400 font-mono whitespace-nowrap" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</td>
+                            <td class="py-4 px-6 whitespace-nowrap">
+                                <span th:class="${product.stock > 10 ? 'inline-block whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'inline-block whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20'}"
                                       th:text="${product.stock + ' unids.'}">
                                     10 unids.
                                 </span>
                             </td>
-                            <td class="py-4 px-6 text-slate-400 text-xs font-mono" th:text="${product.createdAt != null ? #temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">2026-08-10 13:30</td>
+                            <td class="py-4 px-6 text-slate-400 text-xs font-mono whitespace-nowrap" th:text="${product.createdAt != null ? #temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">2026-08-10 13:30</td>
                             <td class="py-4 px-6 text-center">
                                 <div class="inline-flex items-center gap-2">
                                     <a th:href="@{/products/form/{id}(id=${product.id})}"
