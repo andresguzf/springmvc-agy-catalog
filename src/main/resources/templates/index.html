@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">12-springmvc-app</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-bold text-slate-900 text-xl shadow-lg shadow-emerald-500/20">
+                    12
+                </div>
+                <span class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-200 bg-clip-text text-transparent">
+                    12-springmvc-app
+                </span>
+            </div>
+            <nav class="flex items-center space-x-6 text-sm font-medium">
+                <a href="#" class="text-emerald-400 hover:text-emerald-300 transition">Inicio</a>
+                <a href="#" class="text-slate-400 hover:text-slate-200 transition">Documentación</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="max-w-3xl w-full text-center space-y-8">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Spring Boot 4.1.0 & Spring Web MVC
+            </div>
+            
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-100 tracking-tight" th:text="${welcomeMessage}">
+                ¡Bienvenido al nuevo proyecto Spring MVC!
+            </h1>
+
+            <p class="text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto" th:text="#{app.description}">
+                Proyecto base Spring Web MVC configurado con Thymeleaf, Tailwind CSS y la skill de Buenas Prácticas de Spring Boot.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left pt-6">
+                <div class="p-6 rounded-2xl bg-slate-800/60 border border-slate-700/50 hover:border-emerald-500/40 transition group">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 font-semibold group-hover:scale-110 transition-transform">
+                        ⚙️
+                    </div>
+                    <h3 class="font-semibold text-slate-200 mb-2">Spring Boot 4.1</h3>
+                    <p class="text-sm text-slate-400">Desarrollo modular con Java 25 y las últimas características del framework.</p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-slate-800/60 border border-slate-700/50 hover:border-teal-500/40 transition group">
+                    <div class="w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400 mb-4 font-semibold group-hover:scale-110 transition-transform">
+                        🎨
+                    </div>
+                    <h3 class="font-semibold text-slate-200 mb-2">Thymeleaf & Tailwind</h3>
+                    <p class="text-sm text-slate-400">Motor de plantillas del lado del servidor con diseño responsive moderno.</p>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-slate-800/60 border border-slate-700/50 hover:border-cyan-500/40 transition group">
+                    <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-4 font-semibold group-hover:scale-110 transition-transform">
+                        🎯
+                    </div>
+                    <h3 class="font-semibold text-slate-200 mb-2">Skill de Buenas Prácticas</h3>
+                    <p class="text-sm text-slate-400">Incluye la skill en <code>.agents/skills/spring-boot-best-practices</code>.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800/40 border-t border-slate-800 py-6 text-center text-sm text-slate-500">
+        <p>© 2026 12-springmvc-app. Creado en paralelo como parte del curso Spring Boot.</p>
+    </footer>
+
+</body>
+</html>
