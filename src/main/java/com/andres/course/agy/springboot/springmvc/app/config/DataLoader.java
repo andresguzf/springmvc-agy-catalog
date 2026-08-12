@@ -4,32 +4,25 @@ import com.andres.course.agy.springboot.springmvc.app.models.Product;
 import com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
-
-import jakarta.persistence.EntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 public class DataLoader implements CommandLineRunner {
 
     private final ProductRepository productRepository;
-    private final EntityManager entityManager;
 
-    public DataLoader(ProductRepository productRepository, EntityManager entityManager) {
+    public DataLoader(ProductRepository productRepository) {
         this.productRepository = productRepository;
-        this.entityManager = entityManager;
     }
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        try {
-            entityManager.createNativeQuery("TRUNCATE TABLE products RESTART IDENTITY CASCADE").executeUpdate();
-        } catch (Exception e) {
-            productRepository.deleteAllInBatch();
+        if (productRepository.count() > 0) {
+            return;
         }
 
         LocalDateTime now = LocalDateTime.now();
