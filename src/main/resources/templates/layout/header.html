@@ -24,13 +24,8 @@
                 </a>
                 <a sec:authorize="hasRole('ADMIN')"
                    th:href="@{/admin/products}"
-                   th:class="${activePage == 'products' ? 'text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1 transition' : 'text-slate-400 hover:text-slate-200 transition'}">
-                    📦 Admin Productos
-                </a>
-                <a sec:authorize="hasRole('ADMIN')"
-                   th:href="@{/admin/users}"
-                   th:class="${activePage == 'users' ? 'text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1 transition' : 'text-slate-400 hover:text-slate-200 transition'}">
-                    👥 Admin Usuarios
+                   th:class="${activePage == 'products' or activePage == 'users' or activePage == 'admin' ? 'text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1 transition' : 'text-slate-400 hover:text-slate-200 transition'}">
+                    🛡️ Panel Admin
                 </a>
                 <a th:href="@{/cart}"
                    th:class="${activePage == 'cart' ? 'text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1 transition flex items-center gap-1.5' : 'text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5'}">
