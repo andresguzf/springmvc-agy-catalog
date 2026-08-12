@@ -44,6 +44,7 @@ public class AdminUserController {
 
         model.addAttribute("title", "Administración de Usuarios y Roles");
         model.addAttribute("users", usersPage.getContent());
+        model.addAttribute("activeAdminsCount", userService.countActiveAdmins());
         model.addAttribute("page", pageRender);
 
         return "users/list";

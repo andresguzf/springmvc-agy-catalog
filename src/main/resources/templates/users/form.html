@@ -83,7 +83,14 @@
                             <div th:each="role : ${allRoles}"
                                  class="p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-slate-700 transition">
                                 <label class="flex items-start gap-3 cursor-pointer">
-                                    <input type="checkbox" name="roleIds" th:value="${role.id}"
+                                    <input th:if="${role.name == 'ROLE_ADMIN' and !isNew and user.roles != null and user.roles.contains(role) and activeAdminsCount <= 1}"
+                                           type="checkbox" th:value="${role.id}" checked="checked" disabled="disabled"
+                                           class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-700 text-purple-500 cursor-not-allowed opacity-75" />
+                                    <input th:if="${role.name == 'ROLE_ADMIN' and !isNew and user.roles != null and user.roles.contains(role) and activeAdminsCount <= 1}"
+                                           type="hidden" name="roleIds" th:value="${role.id}" />
+
+                                    <input th:unless="${role.name == 'ROLE_ADMIN' and !isNew and user.roles != null and user.roles.contains(role) and activeAdminsCount <= 1}"
+                                           type="checkbox" name="roleIds" th:value="${role.id}"
                                            th:checked="${user.roles != null and user.roles.contains(role)}"
                                            class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
                                     <div>

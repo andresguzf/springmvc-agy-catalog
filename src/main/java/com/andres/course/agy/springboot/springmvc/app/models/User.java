@@ -38,7 +38,6 @@ public class User implements Serializable {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank
     @Column(nullable = false, length = 100)
     private String password;
 

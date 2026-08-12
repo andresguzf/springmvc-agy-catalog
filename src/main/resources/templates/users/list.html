@@ -68,7 +68,20 @@
 
                             <!-- Enabled Status -->
                             <td class="py-4 px-6 text-center whitespace-nowrap">
-                                <a th:href="@{/admin/users/toggle-status/{id}(id=${user.id})}"
+                                <button th:if="${user.username == #authentication.name}"
+                                        type="button"
+                                        onclick="showProtectedAlert('No puedes desactivar tu propia cuenta activa.')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition cursor-pointer">
+                                    🟢 Activo (Tú)
+                                </button>
+                                <button th:if="${user.username != #authentication.name and user.roles != null and user.roles.contains('ROLE_ADMIN') and activeAdminsCount <= 1 and user.enabled}"
+                                        type="button"
+                                        onclick="showProtectedAlert('No se puede desactivar al único administrador activo del sistema.')"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/20 transition cursor-pointer">
+                                    🔒 Admin Único
+                                </button>
+                                <a th:if="${user.username != #authentication.name and !(user.roles != null and user.roles.contains('ROLE_ADMIN') and activeAdminsCount <= 1 and user.enabled)}"
+                                   th:href="@{/admin/users/toggle-status/{id}(id=${user.id})}"
                                    th:title="${user.enabled ? 'Haz clic para desactivar usuario' : 'Haz clic para activar usuario'}">
                                     <span th:if="${user.enabled}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">
                                         🟢 Activo
@@ -98,11 +111,24 @@
                                         ✏️ Editar
                                     </a>
 
-                                    <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
-                                       onclick="return confirm('¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.');"
-                                       class="px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white font-bold text-xs transition">
+                                    <button th:if="${user.username == #authentication.name}"
+                                            type="button"
+                                            onclick="showProtectedAlert('No puedes eliminar tu propia cuenta activa.')"
+                                            class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-500 font-bold text-xs border border-slate-700 opacity-60 cursor-not-allowed">
                                         🗑️ Eliminar
-                                    </a>
+                                    </button>
+                                    <button th:if="${user.username != #authentication.name and user.roles != null and user.roles.contains('ROLE_ADMIN') and activeAdminsCount <= 1}"
+                                            type="button"
+                                            onclick="showProtectedAlert('No se puede eliminar al único administrador del sistema.')"
+                                            class="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-500 font-bold text-xs border border-slate-700 opacity-60 cursor-not-allowed">
+                                        🗑️ Eliminar
+                                    </button>
+                                    <button th:if="${user.username != #authentication.name and !(user.roles != null and user.roles.contains('ROLE_ADMIN') and activeAdminsCount <= 1)}"
+                                            type="button"
+                                            th:onclick="confirmDelete('/admin/users/delete/' + [[${user.id}]], '¿Eliminar usuario \'' + [[${user.username}]] + '\'?', 'Esta acción no se puede deshacer.')"
+                                            class="px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white font-bold text-xs transition cursor-pointer">
+                                        🗑️ Eliminar
+                                    </button>
                                 </div>
                             </td>
                         </tr>

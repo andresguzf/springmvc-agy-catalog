@@ -127,7 +127,7 @@
                         ✏️ Editar
                     </a>
                     <button sec:authorize="hasRole('ADMIN')" type="button"
-                            th:onclick="openDeleteModal([[${product.id}]], [[${product.name}]])"
+                            th:onclick="confirmDelete('/admin/products/delete/' + [[${product.id}]], '¿Eliminar producto \'' + [[${product.name}]] + '\'?', 'Esta acción eliminará permanentemente el producto del catálogo.')"
                             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white font-bold text-sm transition shadow-sm cursor-pointer">
                         🗑️ Eliminar
                     </button>
