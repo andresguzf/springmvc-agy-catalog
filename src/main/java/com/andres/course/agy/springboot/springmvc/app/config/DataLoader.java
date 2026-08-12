@@ -36,11 +36,11 @@ public class DataLoader implements CommandLineRunner {
         LocalDateTime now = LocalDateTime.now();
 
         List<Product> products = List.of(
-                new Product("Laptop Gaming ASUS ROG", "Laptop de alto rendimiento con RTX 4070, 32GB RAM y Ryzen 9", 1499.99, 12, now.minusDays(14)),
-                new Product("Teclado Mecánico RGB", "Teclado mecánico con switches Cherry MX Red e iluminación RGB", 89.50, 45, now.minusDays(14)),
-                new Product("Monitor UltraWide 34\"", "Monitor curvo 144Hz 1ms con soporte HDR10 y FreeSync", 450.00, 8, now.minusDays(13)),
-                new Product("Ratón Inalámbrico Pro", "Ratón ergonómico con sensor óptico de 26,000 DPI y carga rápida", 65.00, 30, now.minusDays(12)),
-                new Product("Auriculares Bluetooth ANC", "Auriculares con cancelación activa de ruido y 30 horas de autonomía", 199.00, 15, now.minusDays(11)),
+                new Product("Laptop Gaming ASUS ROG", "Laptop de alto rendimiento con RTX 4070, 32GB RAM y Ryzen 9", 1499.99, 12, now.minusDays(14), "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=300&q=80"),
+                new Product("Teclado Mecánico RGB", "Teclado mecánico con switches Cherry MX Red e iluminación RGB", 89.50, 45, now.minusDays(14), "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=300&q=80"),
+                new Product("Monitor UltraWide 34\"", "Monitor curvo 144Hz 1ms con soporte HDR10 y FreeSync", 450.00, 8, now.minusDays(13), "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=300&q=80"),
+                new Product("Ratón Inalámbrico Pro", "Ratón ergonómico con sensor óptico de 26,000 DPI y carga rápida", 65.00, 30, now.minusDays(12), "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=300&q=80"),
+                new Product("Auriculares Bluetooth ANC", "Auriculares con cancelación activa de ruido y 30 horas de autonomía", 199.00, 15, now.minusDays(11), "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80"),
                 new Product("Silla Gaming Ergonómica", "Silla ajustarle con cojín lumbar de espuma con memoria", 249.99, 10, now.minusDays(10)),
                 new Product("Webcam 4K Pro Ultra", "Cámara web 4K con micrófono dual estéreo y enfoque automático", 129.90, 22, now.minusDays(9)),
                 new Product("Micrófono USB Studio", "Micrófono de condensador profesional con patrón cardioide", 110.00, 18, now.minusDays(8)),

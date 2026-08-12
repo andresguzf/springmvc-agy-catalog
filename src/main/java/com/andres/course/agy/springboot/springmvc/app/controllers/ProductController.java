@@ -1,6 +1,7 @@
 package com.andres.course.agy.springboot.springmvc.app.controllers;
 
 import com.andres.course.agy.springboot.springmvc.app.models.Product;
+import com.andres.course.agy.springboot.springmvc.app.services.CloudinaryService;
 import com.andres.course.agy.springboot.springmvc.app.services.ProductService;
 import com.andres.course.agy.springboot.springmvc.app.util.paginator.PageRender;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.net.URLEncoder;
@@ -24,15 +26,18 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 
     private final ProductService service;
+    private final CloudinaryService cloudinaryService;
 
-    public ProductController(ProductService service) {
+    public ProductController(ProductService service, CloudinaryService cloudinaryService) {
         this.service = service;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @GetMapping({ "", "/", "/list" })
@@ -98,7 +103,9 @@ public class ProductController {
     }
 
     @PostMapping("/form")
-    public String save(@Valid @ModelAttribute("product") Product product, BindingResult result, Model model,
+    public String save(@Valid @ModelAttribute("product") Product product, BindingResult result,
+            @RequestParam(name = "file", required = false) MultipartFile file,
+            Model model,
             RedirectAttributes redirect) {
         if (result.hasErrors()) {
             String pageTitle = (product.getId() != null) ? "Editar Producto | Spring Web MVC"
@@ -106,15 +113,48 @@ public class ProductController {
             model.addAttribute("title", pageTitle);
             return "products/form";
         }
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                // Delete previous image if updating product
+                if (product.getImagePublicId() != null && !product.getImagePublicId().trim().isEmpty()) {
+                    try {
+                        cloudinaryService.delete(product.getImagePublicId());
+                    } catch (Exception e) {
+                        // Log and ignore delete failure for old image
+                    }
+                }
+
+                Map uploadResult = cloudinaryService.upload(file);
+                String imageUrl = (String) uploadResult.get("secure_url");
+                String publicId = (String) uploadResult.get("public_id");
+
+                product.setImage(imageUrl);
+                product.setImagePublicId(publicId);
+            } catch (Exception e) {
+                redirect.addFlashAttribute("error", "Error al subir la imagen a Cloudinary: " + e.getMessage());
+                return "redirect:/products/form" + (product.getId() != null ? "/" + product.getId() : "");
+            }
+        }
+
         String actionMessage = (product.getId() != null) ? "actualizado" : "creado";
         service.save(product);
         redirect.addFlashAttribute("success",
-                "El producto '" + product.getName() + "' ha sido " + actionMessage + " con éxito en PostgreSQL.");
+                "El producto '" + product.getName() + "' ha sido " + actionMessage + " con éxito.");
         return "redirect:/products";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id, RedirectAttributes redirect) {
+        service.findById(id).ifPresent(product -> {
+            if (product.getImagePublicId() != null && !product.getImagePublicId().trim().isEmpty()) {
+                try {
+                    cloudinaryService.delete(product.getImagePublicId());
+                } catch (Exception e) {
+                    // Log and ignore deletion failure from Cloudinary
+                }
+            }
+        });
         if (service.deleteById(id)) {
             redirect.addFlashAttribute("success", "El producto ha sido eliminado con éxito.");
         } else {

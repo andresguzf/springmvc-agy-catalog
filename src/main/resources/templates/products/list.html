@@ -108,6 +108,7 @@
                     <thead>
                         <tr class="bg-slate-800/90 text-slate-400 text-xs uppercase font-semibold tracking-wider border-b border-slate-700/60">
                             <th class="py-4 px-6 whitespace-nowrap">ID</th>
+                            <th class="py-4 px-6 text-center whitespace-nowrap">Imagen</th>
                             <th class="py-4 px-6">Producto</th>
                             <th class="py-4 px-6">Descripción</th>
                             <th class="py-4 px-6 text-right whitespace-nowrap">Precio</th>
@@ -120,6 +121,14 @@
                         <!-- Iteration over products -->
                         <tr th:each="product : ${products}" class="hover:bg-slate-800/60 transition-colors group">
                             <td class="py-4 px-6 font-mono text-slate-400 font-semibold whitespace-nowrap" th:text="${'#' + product.id}">#1</td>
+                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                <div th:if="${product.image != null and not #strings.isEmpty(product.image)}" class="inline-block">
+                                    <img th:src="${product.image}" th:alt="${product.name}" class="w-10 h-10 object-cover rounded-lg border border-slate-700 shadow-sm hover:scale-110 transition-transform duration-200" />
+                                </div>
+                                <div th:unless="${product.image != null and not #strings.isEmpty(product.image)}" class="w-10 h-10 mx-auto rounded-lg bg-slate-800 border border-slate-700/60 flex items-center justify-center text-slate-500 text-xs font-bold">
+                                    🖼️
+                                </div>
+                            </td>
                             <td class="py-4 px-6 font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors" th:text="${product.name}">Laptop Gaming</td>
                             <td class="py-4 px-6 text-slate-400 max-w-xs truncate" th:text="${product.description}">Descripción del producto...</td>
                             <td class="py-4 px-6 text-right font-semibold text-emerald-400 font-mono whitespace-nowrap" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</td>

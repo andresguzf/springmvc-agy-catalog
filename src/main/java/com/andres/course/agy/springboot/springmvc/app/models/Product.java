@@ -47,6 +47,12 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "image")
+    private String image;
+
+    @Column(name = "image_public_id")
+    private String imagePublicId;
+
     public Product() {
     }
 
@@ -63,6 +69,15 @@ public class Product {
         this.price = price;
         this.stock = stock;
         this.createdAt = createdAt;
+    }
+
+    public Product(String name, String description, Double price, Integer stock, LocalDateTime createdAt, String image) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.createdAt = createdAt;
+        this.image = image;
     }
 
     @PrePersist
@@ -133,5 +148,21 @@ public class Product {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getImagePublicId() {
+        return imagePublicId;
+    }
+
+    public void setImagePublicId(String imagePublicId) {
+        this.imagePublicId = imagePublicId;
     }
 }
