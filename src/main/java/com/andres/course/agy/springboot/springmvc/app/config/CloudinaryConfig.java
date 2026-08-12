@@ -22,7 +22,7 @@ public class CloudinaryConfig {
 
     @Bean
     public Cloudinary cloudinary() {
-        Map<String, String> config = ObjectUtils.asMap(
+        Map<String, Object> config = Map.of(
                 "cloud_name", cloudName,
                 "api_key", apiKey,
                 "api_secret", apiSecret,

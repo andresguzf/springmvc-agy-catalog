@@ -53,7 +53,7 @@ class CloudinaryServiceTest {
         when(cloudinary.uploader()).thenReturn(uploader);
         when(uploader.upload(any(byte[].class), any(Map.class))).thenReturn(expectedResponse);
 
-        Map result = cloudinaryService.upload(mockFile);
+        Map<String, Object> result = cloudinaryService.upload(mockFile);
 
         assertNotNull(result);
         assertEquals("https://res.cloudinary.com/demo/image/upload/v12345/products/test-image.jpg", result.get("secure_url"));
@@ -70,7 +70,7 @@ class CloudinaryServiceTest {
         when(cloudinary.uploader()).thenReturn(uploader);
         when(uploader.destroy(eq(publicId), any(Map.class))).thenReturn(expectedResponse);
 
-        Map result = cloudinaryService.delete(publicId);
+        Map<String, Object> result = cloudinaryService.delete(publicId);
 
         assertNotNull(result);
         assertEquals("ok", result.get("result"));

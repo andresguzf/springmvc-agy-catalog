@@ -125,7 +125,7 @@ public class ProductController {
                     }
                 }
 
-                Map uploadResult = cloudinaryService.upload(file);
+                Map<String, Object> uploadResult = cloudinaryService.upload(file);
                 String imageUrl = (String) uploadResult.get("secure_url");
                 String publicId = (String) uploadResult.get("public_id");
 

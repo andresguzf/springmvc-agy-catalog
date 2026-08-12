@@ -1,7 +1,6 @@
 package com.andres.course.agy.springboot.springmvc.app.services;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,14 +17,17 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     }
 
     @Override
-    public Map upload(MultipartFile file) throws IOException {
-        return cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> upload(MultipartFile file) throws IOException {
+        return (Map<String, Object>) cloudinary.uploader().upload(file.getBytes(), Map.of(
                 "folder", "products"
         ));
     }
 
     @Override
-    public Map delete(String publicId) throws IOException {
-        return cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> delete(String publicId) throws IOException {
+        return (Map<String, Object>) cloudinary.uploader().destroy(publicId, Map.of());
     }
 }
+
