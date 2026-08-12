@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<body>
+    <nav th:fragment="paginator" th:if="${page != null and page.totalPaginas > 0}" aria-label="Navegación de páginas" class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/60 shadow-lg">
+        
+        <!-- Info de estado de paginación -->
+        <div class="text-xs text-slate-400 font-medium tracking-wide">
+            Mostrando página <span class="font-bold text-slate-200" th:text="${page.paginaActual}">1</span> de <span class="font-bold text-slate-200" th:text="${page.totalPaginas}">1</span>
+            <span class="text-slate-600 mx-1.5">•</span>
+            Total: <span class="font-bold text-emerald-400 font-mono" th:text="${page.page.totalElements}">0</span> productos
+        </div>
+
+        <!-- Botones de control de paginación -->
+        <ul class="inline-flex items-center space-x-1.5 text-xs font-semibold">
+            
+            <!-- Primera página -->
+            <li>
+                <span th:if="${page.first}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-600 cursor-not-allowed opacity-60">
+                    &laquo; Primera
+                </span>
+                <a th:if="${!page.first}" th:href="@{${page.url}(page=0)}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-700/60 bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition shadow-sm">
+                    &laquo; Primera
+                </a>
+            </li>
+
+            <!-- Página Anterior -->
+            <li>
+                <span th:if="${!page.hasPrevious}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-600 cursor-not-allowed opacity-60">
+                    &lsaquo; Anterior
+                </span>
+                <a th:if="${page.hasPrevious}" th:href="@{${page.url}(page=${page.paginaActual - 2})}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-700/60 bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition shadow-sm">
+                    &lsaquo; Anterior
+                </a>
+            </li>
+
+            <!-- Páginas Numeradas (Rango dinámico de 3-4 a cada lado) -->
+            <li th:each="item : ${page.paginas}">
+                <span th:if="${item.actual}" class="inline-flex items-center justify-center min-w-[36px] h-9 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20 border border-emerald-400/30" th:text="${item.numero}">
+                    1
+                </span>
+                <a th:if="${!item.actual}" th:href="@{${page.url}(page=${item.numero - 1})}" class="inline-flex items-center justify-center min-w-[36px] h-9 px-3 rounded-xl border border-slate-700/60 bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition shadow-sm font-mono" th:text="${item.numero}">
+                    1
+                </a>
+            </li>
+
+            <!-- Página Siguiente -->
+            <li>
+                <span th:if="${!page.hasNext}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-600 cursor-not-allowed opacity-60">
+                    Siguiente &rsaquo;
+                </span>
+                <a th:if="${page.hasNext}" th:href="@{${page.url}(page=${page.paginaActual})}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-700/60 bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition shadow-sm">
+                    Siguiente &rsaquo;
+                </a>
+            </li>
+
+            <!-- Última página -->
+            <li>
+                <span th:if="${page.last}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-800 bg-slate-900/40 text-slate-600 cursor-not-allowed opacity-60">
+                    Última &raquo;
+                </span>
+                <a th:if="${!page.last}" th:href="@{${page.url}(page=${page.totalPaginas - 1})}" class="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-slate-700/60 bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-600 transition shadow-sm">
+                    Última &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+</body>
+</html>

@@ -2,7 +2,12 @@ package com.andres.course.agy.springboot.springmvc.app.controllers;
 
 import com.andres.course.agy.springboot.springmvc.app.models.Product;
 import com.andres.course.agy.springboot.springmvc.app.services.ProductService;
+import com.andres.course.agy.springboot.springmvc.app.util.paginator.PageRender;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,7 +16,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Controller
 @RequestMapping("/products")
@@ -24,9 +36,45 @@ public class ProductController {
     }
 
     @GetMapping({ "", "/", "/list" })
-    public String list(Model model) {
+    public String list(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "query", required = false) String query,
+            @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, 8);
+
+        LocalDateTime startDateTime = (startDate != null) ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = (endDate != null) ? endDate.atTime(LocalTime.MAX) : null;
+
+        Page<Product> products = service.findBySearchCriteria(query, startDateTime, endDateTime, pageable);
+
+        StringBuilder urlParams = new StringBuilder("/products?");
+        if (query != null && !query.trim().isEmpty()) {
+            urlParams.append("query=").append(URLEncoder.encode(query.trim(), StandardCharsets.UTF_8)).append("&");
+        }
+        if (startDate != null) {
+            urlParams.append("startDate=").append(startDate).append("&");
+        }
+        if (endDate != null) {
+            urlParams.append("endDate=").append(endDate).append("&");
+        }
+
+        String pageUrl = urlParams.toString();
+        if (pageUrl.endsWith("&") || pageUrl.endsWith("?")) {
+            pageUrl = pageUrl.substring(0, pageUrl.length() - 1);
+        }
+
+        PageRender<Product> pageRender = new PageRender<>(pageUrl, products);
+
         model.addAttribute("title", "Catálogo de Productos | Spring Web MVC");
-        model.addAttribute("products", service.findAll());
+        model.addAttribute("products", products);
+        model.addAttribute("page", pageRender);
+        model.addAttribute("query", query != null ? query.trim() : "");
+        model.addAttribute("startDate", startDate != null ? startDate.toString() : "");
+        model.addAttribute("endDate", endDate != null ? endDate.toString() : "");
+
         return "products/list";
     }
 

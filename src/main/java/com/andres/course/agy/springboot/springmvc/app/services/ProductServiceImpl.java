@@ -2,9 +2,14 @@ package com.andres.course.agy.springboot.springmvc.app.services;
 
 import com.andres.course.agy.springboot.springmvc.app.models.Product;
 import com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository;
+import com.andres.course.agy.springboot.springmvc.app.repositories.specs.ProductSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +26,19 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public List<Product> findAll() {
         return repository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Product> findBySearchCriteria(String query, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        Specification<Product> spec = ProductSpecification.filterByCriteria(query, startDate, endDate);
+        return repository.findAll(spec, pageable);
     }
 
     @Override

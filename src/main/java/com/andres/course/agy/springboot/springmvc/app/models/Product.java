@@ -57,9 +57,19 @@ public class Product {
         this.stock = stock;
     }
 
+    public Product(String name, String description, Double price, Integer stock, LocalDateTime createdAt) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stock = stock;
+        this.createdAt = createdAt;
+    }
+
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now();
+        }
     }
 
     @PreUpdate
