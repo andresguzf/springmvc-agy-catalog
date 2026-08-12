@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      th:replace="~{layouts/layout :: layout(${title}, 'products', ~{::main})}">
+<head>
+    <title>Detalle del Producto</title>
+</head>
+<body>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-6 py-10 space-y-8">
+        
+        <!-- Header Banner & Navigation -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-800/60 p-6 rounded-2xl border border-slate-700/50">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Ficha Técnica del Producto
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-100 tracking-tight" th:text="${product.name}">Laptop Gaming ASUS ROG</h1>
+                <p class="text-slate-400 text-sm mt-1">Información detallada e inventario almacenado en PostgreSQL.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a th:href="@{/products}" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition flex items-center gap-2">
+                    ← Volver al Listado
+                </a>
+            </div>
+        </div>
+
+        <!-- Product Detail Card Grid -->
+        <div class="bg-slate-800/40 border border-slate-700/60 rounded-3xl p-8 shadow-2xl backdrop-blur-sm grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Image Container -->
+            <div class="lg:col-span-5 space-y-4">
+                <div class="relative group rounded-2xl overflow-hidden bg-slate-900 border border-slate-700/80 shadow-xl aspect-square flex items-center justify-center">
+                    
+                    <!-- Product Image -->
+                    <img th:if="${product.image != null and not #strings.isEmpty(product.image)}"
+                         th:src="${product.image}"
+                         th:alt="${product.name}"
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    
+                    <!-- Fallback Placeholder Icon -->
+                    <div th:unless="${product.image != null and not #strings.isEmpty(product.image)}" class="flex flex-col items-center justify-center text-slate-600 space-y-2">
+                        <span class="text-6xl">🖼️</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Sin Imagen Registrada</span>
+                    </div>
+
+                    <!-- Floating Stock Badge -->
+                    <div class="absolute top-4 left-4">
+                        <span th:class="${product.stock > 10 ? 'px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/90 text-slate-950 shadow-lg backdrop-blur-md' : 'px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/90 text-slate-950 shadow-lg backdrop-blur-md'}"
+                              th:text="${product.stock > 10 ? 'Disponibilidad Alta (' + product.stock + ')' : 'Stock Limitado (' + product.stock + ')'}">
+                            En Stock
+                        </span>
+                    </div>
+
+                    <!-- ID Badge -->
+                    <div class="absolute bottom-4 right-4 bg-slate-950/80 backdrop-blur-md border border-slate-700/60 px-3 py-1 rounded-xl text-xs font-mono text-emerald-400 font-bold">
+                        ID: <span th:text="${'#' + product.id}">#1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Details & Pricing -->
+            <div class="lg:col-span-7 space-y-6 flex flex-col justify-between h-full">
+                <div class="space-y-4">
+                    
+                    <!-- Title & Category Pill -->
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                            📦 Producto del Catálogo
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-slate-100" th:text="${product.name}">Nombre del Producto</h2>
+                    </div>
+
+                    <!-- Price Box -->
+                    <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700/60 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Precio de Venta</span>
+                            <span class="text-3xl font-extrabold text-emerald-400 font-mono"
+                                  th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider block">Stock Disponible</span>
+                            <span class="text-xl font-bold text-slate-200" th:text="${product.stock + ' unidades'}">10 unidades</span>
+                        </div>
+                    </div>
+
+                    <!-- Description Section -->
+                    <div class="space-y-2">
+                        <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider">Descripción del Producto</h3>
+                        <p class="text-slate-300 text-base leading-relaxed bg-slate-900/40 p-4 rounded-xl border border-slate-700/40 whitespace-pre-line"
+                           th:text="${product.description}">
+                            Descripción completa del producto...
+                        </p>
+                    </div>
+
+                    <!-- Metadata Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-700/40 space-y-1">
+                            <span class="text-slate-400 font-medium block">📅 Fecha de Creación</span>
+                            <span class="text-slate-200 font-mono font-semibold"
+                                  th:text="${product.createdAt != null ? #temporals.format(product.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}">10/08/2026 14:00</span>
+                        </div>
+                        <div class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-700/40 space-y-1">
+                            <span class="text-slate-400 font-medium block">🔄 Última Actualización</span>
+                            <span class="text-slate-200 font-mono font-semibold"
+                                  th:text="${product.updatedAt != null ? #temporals.format(product.updatedAt, 'dd/MM/yyyy HH:mm') : 'Sin modificaciones'}">Sin modificaciones</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-700/60 mt-4">
+                    <a th:href="@{/products}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
+                        ← Volver
+                    </a>
+                    <a th:href="@{/products/form/{id}(id=${product.id})}"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-sm transition shadow-sm">
+                        ✏️ Editar
+                    </a>
+                    <button type="button"
+                            th:onclick="openDeleteModal([[${product.id}]], [[${product.name}]])"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white font-bold text-sm transition shadow-sm cursor-pointer">
+                        🗑️ Eliminar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Interactive Delete Confirmation Modal -->
+        <div id="deleteModal" onclick="if(event.target === this) closeDeleteModal()" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden transition-opacity duration-300">
+            <div class="bg-slate-900 border border-slate-700/80 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-6 relative transform transition-all border-t-4 border-t-rose-500">
+                <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-2xl mx-auto shadow-inner">
+                    🗑️
+                </div>
+
+                <div class="text-center space-y-2">
+                    <h3 class="text-xl font-bold text-slate-100">¿Confirmar Eliminación?</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        ¿Estás seguro de que deseas eliminar el producto <span id="modalProductName" class="font-bold text-slate-100 underline decoration-rose-500/50"></span>?
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                    <button type="button" onclick="closeDeleteModal()" class="flex-1 py-2.5 px-4 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-semibold transition cursor-pointer">
+                        Cancelar
+                    </button>
+                    <a id="modalConfirmBtn" href="#" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-sm font-bold text-center shadow-lg shadow-rose-600/30 transition cursor-pointer">
+                        Sí, Eliminar
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openDeleteModal(id, productName) {
+                document.getElementById('modalProductName').textContent = productName;
+                document.getElementById('modalConfirmBtn').href = '/products/delete/' + id;
+                document.getElementById('deleteModal').classList.remove('hidden');
+            }
+
+            function closeDeleteModal() {
+                document.getElementById('deleteModal').classList.add('hidden');
+            }
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeDeleteModal();
+                }
+            });
+        </script>
+
+    </main>
+
+</body>
+</html>

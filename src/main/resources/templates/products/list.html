@@ -118,18 +118,21 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-700/40 text-sm">
-                        <!-- Iteration over products -->
                         <tr th:each="product : ${products}" class="hover:bg-slate-800/60 transition-colors group">
                             <td class="py-4 px-6 font-mono text-slate-400 font-semibold whitespace-nowrap" th:text="${'#' + product.id}">#1</td>
                             <td class="py-4 px-6 text-center whitespace-nowrap">
-                                <div th:if="${product.image != null and not #strings.isEmpty(product.image)}" class="inline-block">
-                                    <img th:src="${product.image}" th:alt="${product.name}" class="w-10 h-10 object-cover rounded-lg border border-slate-700 shadow-sm hover:scale-110 transition-transform duration-200" />
-                                </div>
-                                <div th:unless="${product.image != null and not #strings.isEmpty(product.image)}" class="w-10 h-10 mx-auto rounded-lg bg-slate-800 border border-slate-700/60 flex items-center justify-center text-slate-500 text-xs font-bold">
-                                    🖼️
-                                </div>
+                                <a th:href="@{/products/detail/{id}(id=${product.id})}">
+                                    <div th:if="${product.image != null and not #strings.isEmpty(product.image)}" class="inline-block">
+                                        <img th:src="${product.image}" th:alt="${product.name}" class="w-10 h-10 object-cover rounded-lg border border-slate-700 shadow-sm hover:scale-110 transition-transform duration-200" />
+                                    </div>
+                                    <div th:unless="${product.image != null and not #strings.isEmpty(product.image)}" class="w-10 h-10 mx-auto rounded-lg bg-slate-800 border border-slate-700/60 flex items-center justify-center text-slate-500 text-xs font-bold">
+                                        🖼️
+                                    </div>
+                                </a>
                             </td>
-                            <td class="py-4 px-6 font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors" th:text="${product.name}">Laptop Gaming</td>
+                            <td class="py-4 px-6 font-semibold text-slate-100 group-hover:text-emerald-400 transition-colors">
+                                <a th:href="@{/products/detail/{id}(id=${product.id})}" th:text="${product.name}">Laptop Gaming</a>
+                            </td>
                             <td class="py-4 px-6 text-slate-400 max-w-xs truncate" th:text="${product.description}">Descripción del producto...</td>
                             <td class="py-4 px-6 text-right font-semibold text-emerald-400 font-mono whitespace-nowrap" th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$999.99</td>
                             <td class="py-4 px-6 whitespace-nowrap">
@@ -140,21 +143,19 @@
                             </td>
                             <td class="py-4 px-6 text-slate-400 text-xs font-mono whitespace-nowrap" th:text="${product.createdAt != null ? #temporals.format(product.createdAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">2026-08-10 13:30</td>
                             <td class="py-4 px-6 text-center">
-                                <div class="inline-flex items-center gap-2">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <a th:href="@{/products/detail/{id}(id=${product.id})}"
+                                       class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 transition-all duration-200 shadow-sm">
+                                        👁️ Ver
+                                    </a>
                                     <a th:href="@{/products/form/{id}(id=${product.id})}"
-                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-600 hover:text-white hover:border-amber-600 transition-all duration-200 shadow-sm cursor-pointer">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                        Editar
+                                       class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-600 hover:text-white hover:border-amber-600 transition-all duration-200 shadow-sm cursor-pointer">
+                                        ✏️ Editar
                                     </a>
                                     <button type="button"
                                             th:onclick="openDeleteModal([[${product.id}]], [[${product.name}]])"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-200 shadow-sm cursor-pointer">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                        Eliminar
+                                            class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-200 shadow-sm cursor-pointer">
+                                        🗑️ Eliminar
                                     </button>
                                 </div>
                             </td>

@@ -91,6 +91,18 @@ public class ProductController {
         return "products/form";
     }
 
+    @GetMapping({ "/detail/{id}", "/view/{id}" })
+    public String detail(@PathVariable Long id, Model model, RedirectAttributes redirect) {
+        return service.findById(id).map(product -> {
+            model.addAttribute("title", product.getName() + " | Detalle del Producto");
+            model.addAttribute("product", product);
+            return "products/detail";
+        }).orElseGet(() -> {
+            redirect.addFlashAttribute("error", "El producto especificado no existe.");
+            return "redirect:/products";
+        });
+    }
+
     @GetMapping("/form/{id}")
     public String editForm(@PathVariable Long id, Model model, RedirectAttributes redirect) {
         return service.findById(id).map(product -> {
