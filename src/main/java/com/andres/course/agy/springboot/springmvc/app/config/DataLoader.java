@@ -1,8 +1,13 @@
 package com.andres.course.agy.springboot.springmvc.app.config;
 
 import com.andres.course.agy.springboot.springmvc.app.models.Product;
+import com.andres.course.agy.springboot.springmvc.app.models.Role;
+import com.andres.course.agy.springboot.springmvc.app.models.User;
 import com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository;
+import com.andres.course.agy.springboot.springmvc.app.repositories.RoleRepository;
+import com.andres.course.agy.springboot.springmvc.app.repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +18,54 @@ import java.util.List;
 public class DataLoader implements CommandLineRunner {
 
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataLoader(ProductRepository productRepository) {
+    public DataLoader(ProductRepository productRepository, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> roleRepository.save(new Role("ROLE_ADMIN")));
+        Role billingRole = roleRepository.findByName("ROLE_BILLING").orElseGet(() -> roleRepository.save(new Role("ROLE_BILLING")));
+        Role userRole = roleRepository.findByName("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
+
+        userRepository.findByUsername("admin").ifPresentOrElse(admin -> {
+            admin.addRole(adminRole);
+            admin.addRole(billingRole);
+            admin.addRole(userRole);
+            userRepository.save(admin);
+        }, () -> {
+            User admin = new User("admin", "admin@tienda.com", passwordEncoder.encode("12345"), "Administrador del Sistema", true);
+            admin.addRole(adminRole);
+            admin.addRole(billingRole);
+            admin.addRole(userRole);
+            userRepository.save(admin);
+        });
+
+        userRepository.findByUsername("billing").ifPresentOrElse(billing -> {
+            billing.addRole(billingRole);
+            billing.addRole(userRole);
+            userRepository.save(billing);
+        }, () -> {
+            User billingUser = new User("billing", "billing@tienda.com", passwordEncoder.encode("12345"), "Usuario Facturación", true);
+            billingUser.addRole(billingRole);
+            billingUser.addRole(userRole);
+            userRepository.save(billingUser);
+        });
+
+        if (userRepository.findByUsername("user").isEmpty()) {
+            User commonUser = new User("user", "user@tienda.com", passwordEncoder.encode("12345"), "Usuario Común", true);
+            commonUser.addRole(userRole);
+            userRepository.save(commonUser);
+        }
+
         if (productRepository.count() > 0) {
             return;
         }

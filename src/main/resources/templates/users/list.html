@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es"
+      th:replace="~{layouts/admin-layout :: adminLayout(${title}, 'users', ~{::main})}">
+<head>
+    <title>Administración de Usuarios</title>
+</head>
+<body>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    👥 Panel de Control de Usuarios
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-100 tracking-tight" th:text="${title}">Administración de Usuarios y Roles</h1>
+                <p class="text-slate-400 text-sm mt-1">Gestiona las cuentas de usuario, asignación de roles y estados de acceso en la plataforma.</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a th:href="@{/admin/users/form}"
+                   class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition transform hover:-translate-y-0.5">
+                    ✨ Crear Nuevo Usuario
+                </a>
+            </div>
+        </div>
+
+        <!-- Users Table Container -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur-md">
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800/80 border-b border-slate-700/80 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            <th class="py-4 px-6 text-center">ID</th>
+                            <th class="py-4 px-6">Usuario & Nombre</th>
+                            <th class="py-4 px-6">Correo Electrónico</th>
+                            <th class="py-4 px-6 text-center">Estado</th>
+                            <th class="py-4 px-6">Roles Asignados</th>
+                            <th class="py-4 px-6 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 text-sm">
+                        <tr th:each="user : ${users}" class="hover:bg-slate-800/40 transition-colors group">
+                            
+                            <!-- ID -->
+                            <td class="py-4 px-6 text-center font-mono text-slate-400 text-xs" th:text="${'#' + user.id}">#1</td>
+
+                            <!-- User & Name -->
+                            <td class="py-4 px-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-emerald-400 text-sm font-mono shadow-inner"
+                                         th:text="${#strings.substring(user.username, 0, 1).toUpperCase()}">
+                                        U
+                                    </div>
+                                    <div>
+                                        <span class="font-bold text-slate-100 block group-hover:text-emerald-400 transition-colors" th:text="${user.username}">username</span>
+                                        <span class="text-xs text-slate-400 block" th:text="${user.name}">Nombre Completo</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Email -->
+                            <td class="py-4 px-6 font-mono text-xs text-slate-300" th:text="${user.email}">usuario@tienda.com</td>
+
+                            <!-- Enabled Status -->
+                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                <a th:href="@{/admin/users/toggle-status/{id}(id=${user.id})}"
+                                   th:title="${user.enabled ? 'Haz clic para desactivar usuario' : 'Haz clic para activar usuario'}">
+                                    <span th:if="${user.enabled}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition">
+                                        🟢 Activo
+                                    </span>
+                                    <span th:unless="${user.enabled}" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition">
+                                        🔴 Inactivo
+                                    </span>
+                                </a>
+                            </td>
+
+                            <!-- Roles -->
+                            <td class="py-4 px-6">
+                                <div class="flex flex-wrap gap-1.5">
+                                    <span th:each="role : ${user.roles}"
+                                          th:class="${role.name == 'ROLE_ADMIN' ? 'px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20' : (role.name == 'ROLE_BILLING' ? 'px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20')}"
+                                          th:text="${#strings.replace(role.name, 'ROLE_', '')}">
+                                        ROLE
+                                    </span>
+                                </div>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a th:href="@{/admin/users/form/{id}(id=${user.id})}"
+                                       class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition">
+                                        ✏️ Editar
+                                    </a>
+
+                                    <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
+                                       onclick="return confirm('¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.');"
+                                       class="px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white font-bold text-xs transition">
+                                        🗑️ Eliminar
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <nav th:replace="~{layout/paginator :: paginator}"></nav>
+        </div>
+
+    </main>
+
+</body>
+</html>

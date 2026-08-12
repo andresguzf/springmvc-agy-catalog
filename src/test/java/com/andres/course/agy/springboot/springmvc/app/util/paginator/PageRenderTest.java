@@ -20,7 +20,7 @@ class PageRenderTest {
         List<String> items = Collections.nCopies(8, "Product");
         Page<String> page = new PageImpl<>(items, PageRequest.of(0, 8), 32);
 
-        PageRender<String> pageRender = new PageRender<>("/products", page);
+        PageRender<String> pageRender = new PageRender<>("/admin/products", page);
 
         assertEquals(4, pageRender.getTotalPaginas());
         assertEquals(1, pageRender.getPaginaActual());
@@ -44,7 +44,7 @@ class PageRenderTest {
         List<String> items = Collections.nCopies(8, "Product");
         Page<String> page = new PageImpl<>(items, PageRequest.of(4, 8), 80);
 
-        PageRender<String> pageRender = new PageRender<>("/products", page);
+        PageRender<String> pageRender = new PageRender<>("/admin/products", page);
 
         assertEquals(10, pageRender.getTotalPaginas());
         assertEquals(5, pageRender.getPaginaActual());
@@ -66,7 +66,7 @@ class PageRenderTest {
         List<String> items = Collections.nCopies(8, "Product");
         Page<String> page = new PageImpl<>(items, PageRequest.of(1, 8), 80); // Página 2
 
-        PageRender<String> pageRender = new PageRender<>("/products", page);
+        PageRender<String> pageRender = new PageRender<>("/admin/products", page);
 
         List<PageItem> paginas = pageRender.getPaginas();
         assertEquals(7, paginas.size());
@@ -81,7 +81,7 @@ class PageRenderTest {
         List<String> items = Collections.nCopies(8, "Product");
         Page<String> page = new PageImpl<>(items, PageRequest.of(9, 8), 80); // Página 10 de 10
 
-        PageRender<String> pageRender = new PageRender<>("/products", page);
+        PageRender<String> pageRender = new PageRender<>("/admin/products", page);
 
         assertTrue(pageRender.isLast());
         assertFalse(pageRender.isHasNext());
@@ -100,7 +100,7 @@ class PageRenderTest {
         List<String> items = Collections.nCopies(8, "Product");
         Page<String> page = new PageImpl<>(items, PageRequest.of(0, 8), 16);
 
-        String searchUrl = "/products?query=gaming&startDate=2026-08-01&endDate=2026-08-11";
+        String searchUrl = "/admin/products?query=gaming&startDate=2026-08-01&endDate=2026-08-11";
         PageRender<String> pageRender = new PageRender<>(searchUrl, page);
 
         assertEquals(searchUrl, pageRender.getUrl());

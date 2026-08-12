@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="es"
-      th:replace="~{layouts/layout :: layout(${title}, 'products', ~{::main})}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es"
+      th:replace="~{layouts/admin-layout :: adminLayout(${title}, 'products', ~{::main})}">
 <head>
     <title>Detalle del Producto</title>
 </head>
@@ -20,8 +22,11 @@
                 <p class="text-slate-400 text-sm mt-1">Información detallada e inventario almacenado en PostgreSQL.</p>
             </div>
             <div class="flex items-center gap-3">
-                <a th:href="@{/products}" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition flex items-center gap-2">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/products}" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition flex items-center gap-2">
                     ← Volver al Listado
+                </a>
+                <a sec:authorize="!hasRole('ADMIN')" th:href="@{/index}" class="px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition flex items-center gap-2">
+                    ← Volver al Inicio
                 </a>
             </div>
         </div>
@@ -111,14 +116,17 @@
 
                 <!-- Action Buttons -->
                 <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-700/60 mt-4">
-                    <a th:href="@{/products}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/products}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
                         ← Volver
                     </a>
-                    <a th:href="@{/products/form/{id}(id=${product.id})}"
+                    <a sec:authorize="!hasRole('ADMIN')" th:href="@{/index}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
+                        ← Volver
+                    </a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/products/form/{id}(id=${product.id})}"
                        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-slate-950 font-bold text-sm transition shadow-sm">
                         ✏️ Editar
                     </a>
-                    <button type="button"
+                    <button sec:authorize="hasRole('ADMIN')" type="button"
                             th:onclick="openDeleteModal([[${product.id}]], [[${product.name}]])"
                             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white font-bold text-sm transition shadow-sm cursor-pointer">
                         🗑️ Eliminar
@@ -156,7 +164,7 @@
         <script>
             function openDeleteModal(id, productName) {
                 document.getElementById('modalProductName').textContent = productName;
-                document.getElementById('modalConfirmBtn').href = '/products/delete/' + id;
+                document.getElementById('modalConfirmBtn').href = '/admin/products/delete/' + id;
                 document.getElementById('deleteModal').classList.remove('hidden');
             }
 

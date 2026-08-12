@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es"
+      th:fragment="adminLayout(title, activeSection, content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title + ' | Panel de Administración'}">Panel de Administración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar-collapsed {
+            width: 5rem !important;
+        }
+        .sidebar-collapsed .sidebar-text,
+        .sidebar-collapsed .sidebar-profile-info {
+            display: none !important;
+        }
+        .sidebar-collapsed .sidebar-nav-item {
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-emerald-500 selection:text-slate-950">
+
+    <div class="flex flex-1 min-h-screen relative">
+        
+        <!-- Left Collapsible Sidebar -->
+        <aside id="adminSidebar"
+               class="w-64 bg-slate-900/95 border-r border-slate-800 flex flex-col justify-between transition-all duration-300 z-40 fixed inset-y-0 left-0 md:static">
+            
+            <!-- Sidebar Header & Brand -->
+            <div class="space-y-6 p-4">
+                
+                <div class="flex items-center justify-between">
+                    <a th:href="@{/admin/products}" class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-emerald-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-purple-500/20">
+                            🛡️
+                        </div>
+                        <div class="sidebar-text">
+                            <span class="font-extrabold text-base bg-gradient-to-r from-purple-400 to-emerald-400 bg-clip-text text-transparent block">
+                                Admin Dashboard
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-mono block">Spring Web MVC</span>
+                        </div>
+                    </a>
+
+                    <!-- Sidebar Toggle Button (Desktop) -->
+                    <button type="button" onclick="toggleAdminSidebar()" title="Contraer/Expandir menú"
+                            class="hidden md:flex p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition cursor-pointer">
+                        <span id="sidebarToggleIcon">◀</span>
+                    </button>
+                </div>
+
+                <!-- Admin Profile Card -->
+                <div class="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center font-bold text-purple-400 font-mono text-xs shadow-inner flex-shrink-0">
+                        A
+                    </div>
+                    <div class="sidebar-profile-info min-w-0 flex-grow">
+                        <span class="font-bold text-xs text-slate-200 block truncate" sec:authentication="name">Administrador</span>
+                        <span class="px-2 py-0.5 rounded text-[9px] font-extrabold uppercase font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30 inline-block">
+                            ROLE_ADMIN
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="space-y-1.5 pt-2">
+                    <div class="sidebar-text text-[10px] font-bold uppercase tracking-wider text-slate-500 px-3 mb-2">
+                        Módulos Principales
+                    </div>
+
+                    <!-- Products Link -->
+                    <a th:href="@{/admin/products}"
+                       th:class="${activeSection == 'products' ? 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-sm transition shadow-sm' : 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 font-medium text-sm transition'}">
+                        <span class="text-lg flex-shrink-0">📦</span>
+                        <span class="sidebar-text">Gestión de Productos</span>
+                    </a>
+
+                    <!-- Users Link -->
+                    <a th:href="@{/admin/users}"
+                       th:class="${activeSection == 'users' ? 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-purple-500/20 to-indigo-500/10 border border-purple-500/30 text-purple-300 font-bold text-sm transition shadow-sm' : 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 font-medium text-sm transition'}">
+                        <span class="text-lg flex-shrink-0">👥</span>
+                        <span class="sidebar-text">Gestión de Usuarios</span>
+                    </a>
+                </nav>
+
+            </div>
+
+            <!-- Sidebar Footer (Storefront & Logout) -->
+            <div class="p-4 border-t border-slate-800 space-y-2">
+                
+                <a th:href="@{/index}"
+                   class="sidebar-nav-item flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 font-semibold text-xs transition">
+                    <span class="text-base flex-shrink-0">🛍️</span>
+                    <span class="sidebar-text">Volver a la Tienda</span>
+                </a>
+
+                <form th:action="@{/logout}" method="post" class="w-full">
+                    <button type="submit"
+                            class="sidebar-nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-600 border border-rose-500/20 text-rose-400 hover:text-white font-bold text-xs transition cursor-pointer">
+                        <span class="text-base flex-shrink-0">🚪</span>
+                        <span class="sidebar-text">Cerrar Sesión</span>
+                    </button>
+                </form>
+
+            </div>
+
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-grow flex flex-col min-w-0">
+            
+            <!-- Admin Topbar -->
+            <header class="bg-slate-900/80 border-b border-slate-800 px-6 py-4 flex items-center justify-between backdrop-blur">
+                <div class="flex items-center gap-4">
+                    <!-- Mobile Hamburger Button -->
+                    <button type="button" onclick="toggleMobileSidebar()"
+                            class="md:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white text-lg">
+                        ☰
+                    </button>
+
+                    <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
+                        <span>Panel Admin</span>
+                        <span>/</span>
+                        <span class="text-slate-200 font-bold" th:text="${title}">Sección</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <a th:href="@{/index}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-bold border border-slate-700 transition flex items-center gap-1.5">
+                        🛒 Ir al Catálogo Público
+                    </a>
+                </div>
+            </header>
+
+            <!-- Main Injectable Content Slot -->
+            <main class="flex-grow p-6 lg:p-8 space-y-6 overflow-y-auto">
+                <div th:replace="~{layout/alerts :: alerts}"></div>
+                <div th:replace="${content}"></div>
+            </main>
+
+            <!-- Admin Footer -->
+            <footer class="border-t border-slate-800/80 px-6 py-4 text-center text-xs text-slate-500 font-mono">
+                System Admin Panel &copy; 2026 Spring Web MVC
+            </footer>
+
+        </div>
+
+    </div>
+
+    <!-- Interactive Sidebar Toggle Script -->
+    <script>
+        function toggleAdminSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            const icon = document.getElementById('sidebarToggleIcon');
+            sidebar.classList.toggle('sidebar-collapsed');
+
+            const isCollapsed = sidebar.classList.contains('sidebar-collapsed');
+            localStorage.setItem('admin_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+            icon.innerText = isCollapsed ? '▶' : '◀';
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('adminSidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        // Restore collapsed preference on load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('admin_sidebar_collapsed') === 'true' && window.innerWidth >= 768) {
+                const sidebar = document.getElementById('adminSidebar');
+                const icon = document.getElementById('sidebarToggleIcon');
+                if (sidebar) sidebar.classList.add('sidebar-collapsed');
+                if (icon) icon.innerText = '▶';
+            }
+        });
+    </script>
+
+</body>
+</html>

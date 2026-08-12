@@ -25,96 +25,325 @@
             </p>
 
             <div class="flex items-center justify-center gap-4 pt-2">
-                <a th:href="@{/products}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5">
-                    📦 Ver Catálogo Completo
+                <a th:href="@{/cart}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5">
+                    🛒 Ver Carrito de Compras
                 </a>
-                <a th:href="@{/products/form}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm transition">
+                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/products/form}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-sm transition">
                     ✨ Crear Producto
                 </a>
             </div>
         </div>
 
-        <!-- E-Commerce Showcase Section: Top 10 Products -->
-        <section class="space-y-6">
+        <!-- Search Bar Section -->
+        <div class="bg-slate-800/60 p-5 rounded-2xl border border-slate-700/60 shadow-xl space-y-3">
+            <form th:action="@{/index}" method="get" class="flex flex-col sm:flex-row items-center gap-3">
+                <div class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        🔍
+                    </div>
+                    <input type="text" name="query" th:value="${query}" placeholder="Buscar productos por nombre o descripción en la tienda..."
+                           class="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="submit"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-md shadow-emerald-500/20 transition cursor-pointer whitespace-nowrap">
+                        🔍 Buscar
+                    </button>
+                    <a th:href="@{/index}"
+                       th:if="${query != null and !query.isEmpty()}"
+                       class="inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 text-xs font-semibold transition cursor-pointer whitespace-nowrap">
+                        ❌ Limpiar
+                    </a>
+                </div>
+            </form>
+
+            <div th:if="${query != null and !query.isEmpty()}"
+                 class="flex items-center gap-2 pt-3 border-t border-slate-700/40 text-xs text-slate-400">
+                <span class="font-semibold text-emerald-400">Filtro de Búsqueda:</span>
+                <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono">
+                    Texto: "<span th:text="${query}"></span>"
+                </span>
+            </div>
+        </div>
+
+        <!-- Main Content Area: Products Grid + Shopping Cart Sidebar (Solo en Home) -->
+        <div id="mainContentGrid" class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start relative transition-all duration-300">
             
-            <!-- Section Header -->
-            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-700/60 pb-4">
-                <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-semibold uppercase tracking-wider mb-1">
-                        🛒 Catálogo en Destacado
+            <!-- Left Column: Products Showcase (Expands to 4 cols when cart collapsed) -->
+            <div id="catalogContainer" class="lg:col-span-3 space-y-6 transition-all duration-300">
+                
+                <!-- Section Header -->
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-700/60 pb-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 text-teal-400 text-xs font-semibold uppercase tracking-wider mb-1">
+                            🛒 Catálogo en Destacado
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-slate-100 tracking-tight"
+                            th:text="${query != null and !query.isEmpty()} ? 'Resultados de Búsqueda (Últimos 10)' : 'Últimos 10 Productos'">Últimos 10 Productos</h2>
+                        <p class="text-slate-400 text-sm mt-1">Explora las tarjetas de los últimos productos registrados en la tienda.</p>
                     </div>
-                    <h2 class="text-3xl font-extrabold text-slate-100 tracking-tight">Primeros 10 Productos</h2>
-                    <p class="text-slate-400 text-sm mt-1">Explora las tarjetas de los productos principales del inventario.</p>
-                </div>
-                
-                <a th:href="@{/products}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition">
-                    Ver todos los productos →
-                </a>
-            </div>
-
-            <!-- E-Commerce Grid (10 Products) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-                
-                <!-- Product Card Loop -->
-                <div th:each="product : ${products}"
-                     class="bg-slate-800/40 border border-slate-700/60 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:border-slate-600 transition-all duration-300 flex flex-col justify-between group">
                     
-                    <!-- Card Image Header -->
-                    <div class="relative bg-slate-900 aspect-square overflow-hidden flex items-center justify-center">
-                        <a th:href="@{/products/detail/{id}(id=${product.id})}">
-                            <img th:if="${product.image != null and not #strings.isEmpty(product.image)}"
-                                 th:src="${product.image}"
-                                 th:alt="${product.name}"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                            
-                            <div th:unless="${product.image != null and not #strings.isEmpty(product.image)}"
-                                 class="flex flex-col items-center justify-center text-slate-600 space-y-1 p-4">
-                                <span class="text-4xl">🖼️</span>
-                                <span class="text-[10px] font-bold text-slate-500 uppercase">Sin Imagen</span>
-                            </div>
-                        </a>
+                    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/products}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition">
+                        Administración de productos →
+                    </a>
+                </div>
 
-                        <!-- Floating Price Tag -->
-                        <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 shadow-md">
-                            <span class="text-xs font-extrabold text-emerald-400 font-mono"
-                                  th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$99.99</span>
+                <!-- E-Commerce Grid (3 Cols when Cart Expanded, 4-5 Cols when Cart Collapsed) -->
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 transition-all duration-300">
+                    
+                    <!-- Empty State -->
+                    <div th:if="${#lists.isEmpty(products)}"
+                         class="col-span-full py-12 bg-slate-800/30 border border-slate-700/40 rounded-2xl text-center space-y-3">
+                        <div class="text-4xl">📭</div>
+                        <h3 class="text-lg font-bold text-slate-200">No se encontraron productos</h3>
+                        <p class="text-slate-400 text-sm max-w-md mx-auto">
+                            No hay productos que coincidan con el término de búsqueda <span th:if="${query != null and !query.isEmpty()}" th:text="'&quot;' + ${query} + '&quot;'" class="font-semibold text-slate-200"></span>.
+                        </p>
+                        <a th:href="@{/index}" th:if="${query != null and !query.isEmpty()}" class="inline-block mt-2 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold transition">
+                            Ver últimos productos
+                        </a>
+                    </div>
+
+                    <!-- Product Card Loop -->
+                    <div th:each="product : ${products}"
+                         class="bg-slate-800/40 border border-slate-700/60 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:border-slate-600 transition-all duration-300 flex flex-col justify-between group">
+                        
+                        <!-- Card Image Header -->
+                        <div class="relative bg-slate-900 aspect-square overflow-hidden flex items-center justify-center">
+                            <a th:href="@{/admin/products/detail/{id}(id=${product.id})}">
+                                <img th:if="${product.image != null and not #strings.isEmpty(product.image)}"
+                                     th:src="${product.image}"
+                                     th:alt="${product.name}"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                
+                                <div th:unless="${product.image != null and not #strings.isEmpty(product.image)}"
+                                     class="flex flex-col items-center justify-center text-slate-600 space-y-1 p-4">
+                                    <span class="text-4xl">🖼️</span>
+                                    <span class="text-[10px] font-bold text-slate-500 uppercase">Sin Imagen</span>
+                                </div>
+                            </a>
+
+                            <!-- Floating Price Tag -->
+                            <div class="absolute top-3 right-3 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/60 shadow-md">
+                                <span class="text-xs font-extrabold text-emerald-400 font-mono"
+                                      th:text="${'$' + #numbers.formatDecimal(product.price, 1, 'POINT', 2, 'COMMA')}">$99.99</span>
+                            </div>
+
+                            <!-- ID Pill -->
+                            <div class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md px-2 py-0.5 rounded-md border border-slate-800 text-[10px] font-mono text-slate-400">
+                                <span th:text="${'#' + product.id}">#1</span>
+                            </div>
                         </div>
 
-                        <!-- ID Pill -->
-                        <div class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md px-2 py-0.5 rounded-md border border-slate-800 text-[10px] font-mono text-slate-400">
-                            <span th:text="${'#' + product.id}">#1</span>
+                        <!-- Card Body -->
+                        <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
+                            <div class="space-y-1.5">
+                                <h3 class="font-bold text-slate-100 text-sm group-hover:text-emerald-400 transition-colors line-clamp-1">
+                                    <a th:href="@{/admin/products/detail/{id}(id=${product.id})}" th:text="${product.name}">Nombre del Producto</a>
+                                </h3>
+                                <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed" th:text="${product.description}">
+                                    Descripción breve del producto...
+                                </p>
+                            </div>
+
+                            <!-- Card Footer & Cart Action -->
+                            <div class="pt-2 border-t border-slate-700/40 space-y-2.5">
+                                <div class="flex items-center justify-between gap-2">
+                                    <span th:class="${product.stock > 10 ? 'text-[11px] font-semibold text-emerald-400' : 'text-[11px] font-semibold text-amber-400'}"
+                                          th:text="${product.stock + ' unids.'}">
+                                        10 unids.
+                                    </span>
+
+                                    <a th:href="@{/admin/products/detail/{id}(id=${product.id})}"
+                                       class="px-2.5 py-1 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white font-semibold text-[11px] transition">
+                                        Ver Detalle
+                                    </a>
+                                </div>
+
+                                <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" class="w-full">
+                                    <button type="submit"
+                                            class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-md shadow-emerald-500/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                        🛒 Agregar al carro
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right Column: Shopping Cart Sidebar (Solo en Home, Colapsable a la Derecha) -->
+            <aside id="cartSidebar" class="lg:col-span-1 sticky top-24 space-y-4 transition-all duration-300">
+                <div class="bg-slate-800/80 border border-slate-700/80 rounded-3xl p-5 shadow-2xl space-y-4 backdrop-blur">
+                    
+                    <!-- Cart Header (With Collapse to Right Button) -->
+                    <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 select-none">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🛒</span>
+                            <h3 class="text-base font-bold text-slate-100">Carro de Compras</h3>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <span th:text="${cart.totalQuantity + ' items'}"
+                                  class="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold font-mono">
+                                0 items
+                            </span>
+                            
+                            <!-- Collapse to Right Button -->
+                            <button onclick="collapseCartToRight()" type="button"
+                                    class="p-1.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white transition cursor-pointer flex items-center justify-center"
+                                    title="Colapsar hacia la derecha para ampliar catálogo">
+                                ⏩
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Card Body -->
-                    <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
-                        <div class="space-y-1.5">
-                            <h3 class="font-bold text-slate-100 text-sm group-hover:text-emerald-400 transition-colors line-clamp-1">
-                                <a th:href="@{/products/detail/{id}(id=${product.id})}" th:text="${product.name}">Nombre del Producto</a>
-                            </h3>
-                            <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed" th:text="${product.description}">
-                                Descripción breve del producto...
-                            </p>
+                    <!-- Cart Content Body -->
+                    <div class="space-y-5">
+                        <!-- Cart Empty State -->
+                        <div th:if="${cart.empty}" class="py-6 text-center space-y-2">
+                            <div class="text-4xl opacity-40">🛒</div>
+                            <p class="text-slate-300 text-xs font-semibold">El carro está vacío</p>
+                            <p class="text-slate-400 text-[11px] max-w-xs mx-auto">Selecciona productos del catálogo para añadirlos al pedido.</p>
                         </div>
 
-                        <!-- Card Footer -->
-                        <div class="pt-2 border-t border-slate-700/40 flex items-center justify-between gap-2">
-                            <span th:class="${product.stock > 10 ? 'text-[11px] font-semibold text-emerald-400' : 'text-[11px] font-semibold text-amber-400'}"
-                                  th:text="${product.stock + ' unids.'}">
-                                10 unids.
-                            </span>
+                        <!-- Cart Items List -->
+                        <div th:unless="${cart.empty}" class="space-y-3 max-h-[26rem] overflow-y-auto pr-1 divide-y divide-slate-700/40">
+                            <div th:each="item : ${cart.items}" class="pt-3 first:pt-0 flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                    <div class="w-9 h-9 rounded-xl bg-slate-900 overflow-hidden flex-shrink-0 flex items-center justify-center border border-slate-700/60">
+                                        <img th:if="${item.product.image != null and not #strings.isEmpty(item.product.image)}"
+                                             th:src="${item.product.image}" th:alt="${item.product.name}" class="w-full h-full object-cover" />
+                                        <span th:unless="${item.product.image != null and not #strings.isEmpty(item.product.image)}" class="text-xs">🖼️</span>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="text-xs font-bold text-slate-200 truncate" th:text="${item.product.name}">Producto</h4>
+                                        <div class="text-[11px] text-slate-400 font-mono">
+                                            <span th:text="${'$' + #numbers.formatDecimal(item.product.price, 1, 'POINT', 2, 'COMMA')}">$0.00</span>
+                                            <span class="text-slate-500">x</span>
+                                            <span th:text="${item.quantity}" class="font-bold text-emerald-400">1</span>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <a th:href="@{/products/detail/{id}(id=${product.id})}"
-                               class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 text-emerald-400 font-bold text-xs transition">
-                                Ver Detalle
-                            </a>
+                                <!-- Item Quantity & Remove Controls -->
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <form th:action="@{/cart/update/{id}(id=${item.product.id})}" method="post" class="inline-flex">
+                                        <input type="hidden" name="quantity" th:value="${item.quantity - 1}" />
+                                        <button type="submit" class="w-6 h-6 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold flex items-center justify-center transition cursor-pointer">-</button>
+                                    </form>
+                                    <span class="text-xs font-bold text-slate-200 w-4 text-center" th:text="${item.quantity}">1</span>
+                                    <form th:action="@{/cart/update/{id}(id=${item.product.id})}" method="post" class="inline-flex">
+                                        <input type="hidden" name="quantity" th:value="${item.quantity + 1}" />
+                                        <button type="submit" class="w-6 h-6 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold flex items-center justify-center transition cursor-pointer">+</button>
+                                    </form>
+                                    <a th:href="@{/cart/remove/{id}(id=${item.product.id})}" class="p-1 text-rose-400 hover:text-rose-300 text-xs ml-1 transition" title="Eliminar del carro">
+                                        🗑️
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cart Footer Summary -->
+                        <div th:unless="${cart.empty}" class="pt-4 border-t border-slate-700/60 space-y-3">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-slate-400 font-medium">Total:</span>
+                                <span class="text-lg font-extrabold text-emerald-400 font-mono"
+                                      th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 'POINT', 2, 'COMMA')}">
+                                    $0.00
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-2 pt-1">
+                                <a th:href="@{/cart/clear}" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 text-xs font-bold text-center transition">
+                                    🧹 Vaciar
+                                </a>
+                                <button onclick="alert('¡Compra procesada con éxito!')" class="flex-1 py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-extrabold text-center shadow-lg shadow-emerald-500/20 transition cursor-pointer">
+                                    💳 Comprar
+                                </button>
+                            </div>
                         </div>
                     </div>
 
                 </div>
+            </aside>
+        </div>
 
+        <!-- Floating Fixed Right Tab (Visible only when Cart is Collapsed to Right) -->
+        <div id="collapsedCartTab" onclick="expandCartFromRight()"
+             class="fixed top-28 right-0 z-40 hidden bg-slate-800/95 hover:bg-slate-800 border-l-2 border-y border-emerald-500/60 rounded-l-2xl p-3 shadow-2xl backdrop-blur flex items-center gap-3 cursor-pointer group transition-all duration-300 transform hover:-translate-x-1">
+            
+            <button type="button" class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm group-hover:scale-110 transition-transform">
+                ◀
+            </button>
+
+            <div class="flex items-center gap-2 pr-1">
+                <span class="text-xl">🛒</span>
+                <div class="text-left">
+                    <span class="block text-xs font-bold text-slate-100 group-hover:text-emerald-400 transition-colors">Ver Carro</span>
+                    <span th:text="${cart.totalQuantity + ' items'}" class="text-[11px] font-mono text-emerald-400 font-bold block">0 items</span>
+                </div>
             </div>
-        </section>
+        </div>
+
+        <!-- Cart Right-Collapse JavaScript Handler -->
+        <script>
+            function collapseCartToRight() {
+                const catalogContainer = document.getElementById('catalogContainer');
+                const productGrid = document.getElementById('productGrid');
+                const cartSidebar = document.getElementById('cartSidebar');
+                const collapsedCartTab = document.getElementById('collapsedCartTab');
+
+                if (cartSidebar) cartSidebar.classList.add('hidden');
+                
+                if (catalogContainer) {
+                    catalogContainer.classList.remove('lg:col-span-3');
+                    catalogContainer.classList.add('lg:col-span-4');
+                }
+
+                if (productGrid) {
+                    productGrid.classList.remove('md:grid-cols-3');
+                    productGrid.classList.add('md:grid-cols-3', 'lg:grid-cols-4', 'xl:grid-cols-5');
+                }
+
+                if (collapsedCartTab) collapsedCartTab.classList.remove('hidden');
+
+                localStorage.setItem('cart_collapsed_right', 'true');
+            }
+
+            function expandCartFromRight() {
+                const catalogContainer = document.getElementById('catalogContainer');
+                const productGrid = document.getElementById('productGrid');
+                const cartSidebar = document.getElementById('cartSidebar');
+                const collapsedCartTab = document.getElementById('collapsedCartTab');
+
+                if (collapsedCartTab) collapsedCartTab.classList.add('hidden');
+
+                if (catalogContainer) {
+                    catalogContainer.classList.remove('lg:col-span-4');
+                    catalogContainer.classList.add('lg:col-span-3');
+                }
+
+                if (productGrid) {
+                    productGrid.classList.remove('lg:grid-cols-4', 'xl:grid-cols-5');
+                    productGrid.classList.add('md:grid-cols-3');
+                }
+
+                if (cartSidebar) cartSidebar.classList.remove('hidden');
+
+                localStorage.setItem('cart_collapsed_right', 'false');
+            }
+
+            // Restore right-collapsed state on page load
+            document.addEventListener('DOMContentLoaded', function() {
+                const isCollapsed = localStorage.getItem('cart_collapsed_right');
+                if (isCollapsed === 'true') {
+                    collapseCartToRight();
+                }
+            });
+        </script>
 
     </main>
 

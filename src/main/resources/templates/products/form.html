@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es"
-      th:replace="~{layouts/layout :: layout(${title}, 'products', ~{::main})}">
+      th:replace="~{layouts/admin-layout :: adminLayout(${title}, 'products', ~{::main})}">
 <head>
     <title>Crear Producto</title>
 </head>
@@ -19,14 +19,14 @@
                 <h1 class="text-3xl font-extrabold text-slate-100 tracking-tight" th:text="${product.id != null ? 'Editar Producto' : 'Crear Nuevo Producto'}">Crear Nuevo Producto</h1>
                 <p class="text-slate-400 text-sm mt-1" th:text="${product.id != null ? 'Modifica los campos deseados del producto en PostgreSQL.' : 'Completa los campos para almacenar el nuevo producto en PostgreSQL.'}">Completa los campos para almacenar el nuevo producto en PostgreSQL.</p>
             </div>
-            <a th:href="@{/products}" class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition flex items-center gap-2">
+            <a th:href="@{/admin/products}" class="px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition flex items-center gap-2">
                 ← Volver al Listado
             </a>
         </div>
 
         <!-- Product Form Card -->
         <div class="bg-slate-800/40 border border-slate-700/60 rounded-2xl p-8 shadow-xl">
-            <form th:action="@{/products/form}" th:object="${product}" method="post" enctype="multipart/form-data" class="space-y-6">
+            <form th:action="@{/admin/products/form}" th:object="${product}" method="post" enctype="multipart/form-data" class="space-y-6">
 
                 <!-- Hidden ID & Image Metadata for edit support -->
                 <input type="hidden" th:field="*{id}" />
@@ -92,7 +92,7 @@
 
                 <!-- Form Action Buttons -->
                 <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-700/60">
-                    <a th:href="@{/products}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
+                    <a th:href="@{/admin/products}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
                         Cancelar
                     </a>
                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 font-bold text-sm shadow-lg shadow-emerald-500/20 transition transform hover:-translate-y-0.5 cursor-pointer"

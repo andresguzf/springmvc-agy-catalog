@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      th:replace="~{layouts/layout :: layout(${title}, 'cart', ~{::main})}">
+<head>
+    <title>Carro de Compras - Catálogo E-Commerce</title>
+</head>
+<body>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-8">
+
+        <!-- Header Banner Card -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/60 p-6 rounded-3xl border border-slate-700/60 shadow-xl">
+            <div class="space-y-1">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+                    🛒 Mi Carrito de Compras
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-100 tracking-tight">Detalle del Carro de Compras</h1>
+                <p class="text-slate-400 text-sm">Gestiona los productos agregados a tu pedido antes de finalizar la compra.</p>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 bg-slate-900/80 px-5 py-3 rounded-2xl border border-slate-700/60 shadow-inner">
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block font-medium uppercase tracking-wider">Total Ítems</span>
+                        <span class="text-2xl font-extrabold text-emerald-400 font-mono" th:text="${cart.totalQuantity}">0</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 text-xl font-bold">
+                        🛍️
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty Cart State -->
+        <div th:if="${cart.empty}" class="bg-slate-800/40 border border-slate-700/60 rounded-3xl p-12 text-center space-y-6 shadow-2xl">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-slate-800 border border-slate-700 flex items-center justify-center text-5xl shadow-inner text-slate-500">
+                🛒
+            </div>
+            <div class="space-y-2 max-w-md mx-auto">
+                <h2 class="text-2xl font-extrabold text-slate-100">Tu carro de compras está vacío</h2>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Aún no has agregado ningún producto al carro. Explora nuestro catálogo tecnológico para descubrir los mejores productos.
+                </p>
+            </div>
+            <div class="pt-2">
+                <a th:href="@{/index}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5">
+                    📦 Explorar Catálogo de Productos
+                </a>
+            </div>
+        </div>
+
+        <!-- Cart View Details Content Grid -->
+        <div th:unless="${cart.empty}" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            
+            <!-- Left Column: Items Table / Details (2 Cols) -->
+            <div class="lg:col-span-2 bg-slate-800/40 border border-slate-700/60 rounded-3xl overflow-hidden shadow-2xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-800/90 text-slate-400 text-xs uppercase font-semibold tracking-wider border-b border-slate-700/60">
+                                <th class="py-4 px-6 text-center whitespace-nowrap">Imagen</th>
+                                <th class="py-4 px-6">Producto</th>
+                                <th class="py-4 px-6 text-right whitespace-nowrap">Precio Unit.</th>
+                                <th class="py-4 px-6 text-center whitespace-nowrap">Cantidad</th>
+                                <th class="py-4 px-6 text-right whitespace-nowrap">Subtotal</th>
+                                <th class="py-4 px-6 text-center whitespace-nowrap">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700/40 text-sm">
+                            <tr th:each="item : ${cart.items}" class="hover:bg-slate-800/60 transition-colors group">
+                                
+                                <!-- Product Image -->
+                                <td class="py-4 px-6 text-center whitespace-nowrap">
+                                    <a th:href="@{/admin/products/detail/{id}(id=${item.product.id})}">
+                                        <div th:if="${item.product.image != null and not #strings.isEmpty(item.product.image)}" class="inline-block">
+                                            <img th:src="${item.product.image}" th:alt="${item.product.name}" class="w-14 h-14 object-cover rounded-xl border border-slate-700 shadow-md group-hover:scale-105 transition-transform duration-200" />
+                                        </div>
+                                        <div th:unless="${item.product.image != null and not #strings.isEmpty(item.product.image)}" class="w-14 h-14 mx-auto rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-500 text-lg font-bold">
+                                            🖼️
+                                        </div>
+                                    </a>
+                                </td>
+
+                                <!-- Product Info -->
+                                <td class="py-4 px-6">
+                                    <div class="space-y-1">
+                                        <a th:href="@{/admin/products/detail/{id}(id=${item.product.id})}"
+                                           class="font-bold text-slate-100 group-hover:text-emerald-400 transition-colors text-base block"
+                                           th:text="${item.product.name}">
+                                            Nombre del Producto
+                                        </a>
+                                        <span class="text-xs font-mono text-slate-400 block" th:text="${'ID: #' + item.product.id}">#1</span>
+                                    </div>
+                                </td>
+
+                                <!-- Unit Price -->
+                                <td class="py-4 px-6 text-right font-mono font-medium text-slate-300 whitespace-nowrap"
+                                    th:text="${'$' + #numbers.formatDecimal(item.product.price, 1, 'POINT', 2, 'COMMA')}">
+                                    $99.99
+                                </td>
+
+                                <!-- Quantity Controls -->
+                                <td class="py-4 px-6 text-center whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-xl border border-slate-700/60 shadow-inner">
+                                        <form th:action="@{/cart/update/{id}(id=${item.product.id})}" method="post" class="inline-flex">
+                                            <input type="hidden" name="quantity" th:value="${item.quantity - 1}" />
+                                            <button type="submit"
+                                                    class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold flex items-center justify-center transition cursor-pointer"
+                                                    title="Disminuir cantidad">
+                                                -
+                                            </button>
+                                        </form>
+
+                                        <form th:action="@{/cart/update/{id}(id=${item.product.id})}" method="post" class="inline-flex items-center">
+                                            <input type="number" name="quantity" th:value="${item.quantity}" min="1" max="99"
+                                                   onchange="this.form.submit()"
+                                                   class="w-10 text-center bg-transparent text-emerald-400 font-bold font-mono text-sm focus:outline-none" />
+                                        </form>
+
+                                        <form th:action="@{/cart/update/{id}(id=${item.product.id})}" method="post" class="inline-flex">
+                                            <input type="hidden" name="quantity" th:value="${item.quantity + 1}" />
+                                            <button type="submit"
+                                                    class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold flex items-center justify-center transition cursor-pointer"
+                                                    title="Aumentar cantidad">
+                                                +
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+
+                                <!-- Item Subtotal -->
+                                <td class="py-4 px-6 text-right font-mono font-bold text-emerald-400 text-base whitespace-nowrap"
+                                    th:text="${'$' + #numbers.formatDecimal(item.amount, 1, 'POINT', 2, 'COMMA')}">
+                                    $99.99
+                                </td>
+
+                                <!-- Actions (Delete) -->
+                                <td class="py-4 px-6 text-center whitespace-nowrap">
+                                    <a th:href="@{/cart/remove/{id}(id=${item.product.id})}"
+                                       class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-200 shadow-sm"
+                                       title="Eliminar producto del carro">
+                                        🗑️ Eliminar
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Column: Order Summary Card (1 Col) -->
+            <div class="lg:col-span-1 bg-slate-800/60 border border-slate-700/80 rounded-3xl p-6 shadow-2xl space-y-6 backdrop-blur sticky top-24">
+                <div class="border-b border-slate-700/60 pb-4">
+                    <h3 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+                        💳 Resumen del Pedido
+                    </h3>
+                    <p class="text-slate-400 text-xs mt-1">Revisión final de los costos de tu compra.</p>
+                </div>
+
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center justify-between text-slate-300">
+                        <span>Subtotal Ítems:</span>
+                        <span class="font-mono font-semibold text-slate-100"
+                              th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 'POINT', 2, 'COMMA')}">
+                            $0.00
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-slate-300">
+                        <span>Costo de Envío:</span>
+                        <span class="font-mono font-semibold text-emerald-400">¡GRATIS!</span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-slate-300">
+                        <span>Impuestos incluidos:</span>
+                        <span class="font-mono font-semibold text-slate-400">19% IVA</span>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-700/60 flex items-center justify-between">
+                        <span class="text-base font-bold text-slate-100">Total General:</span>
+                        <span class="text-2xl font-extrabold text-emerald-400 font-mono"
+                              th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 'POINT', 2, 'COMMA')}">
+                            $0.00
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <button onclick="alert('¡Excelente elección! Tu pedido ha sido procesado con éxito.')"
+                            class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
+                        💳 Finalizar Compra
+                    </button>
+
+                    <div class="flex items-center gap-3">
+                        <a th:href="@{/cart/clear}"
+                           class="flex-1 py-2.5 px-3 rounded-xl bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-600/50 text-xs font-bold text-center transition flex items-center justify-center gap-1">
+                            🧹 Vaciar Carro
+                        </a>
+
+                        <a th:href="@{/index}"
+                           class="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-bold text-center transition flex items-center justify-center gap-1">
+                            📦 Más Productos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

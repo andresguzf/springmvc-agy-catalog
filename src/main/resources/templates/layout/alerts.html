@@ -17,17 +17,32 @@
             </div>
         </div>
 
+        <!-- Flash Alert Info -->
+        <div th:if="${info != null}" class="max-w-7xl w-full mx-auto px-6 pt-6">
+            <div class="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-300 flex items-center justify-between shadow-lg shadow-sky-500/5 animate-fade-in">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-sky-500/20 flex items-center justify-center text-sky-400 font-bold">
+                        ℹ️
+                    </div>
+                    <span class="text-sm font-medium" th:text="${info}">Información del sistema.</span>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="text-sky-400 hover:text-sky-200 transition text-lg px-2 font-bold cursor-pointer">✕</button>
+            </div>
+        </div>
+
         <!-- Flash Alert Error -->
-        <div th:if="${error != null}" class="max-w-7xl w-full mx-auto px-6 pt-6">
+        <div th:if="${error != null or session.error != null}" class="max-w-7xl w-full mx-auto px-6 pt-6">
             <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between shadow-lg shadow-rose-500/5 animate-fade-in">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 font-bold">
                         ⚠️
                     </div>
-                    <span class="text-sm font-medium" th:text="${error}">Ha ocurrido un error.</span>
+                    <span class="text-sm font-medium" th:text="${error != null ? error : session.error}">Ha ocurrido un error.</span>
                 </div>
                 <button onclick="this.parentElement.parentElement.remove()" class="text-rose-400 hover:text-rose-200 transition text-lg px-2 font-bold cursor-pointer">✕</button>
             </div>
+            <!-- Remove session error after displaying -->
+            <span th:if="${session.error != null}" th:text="${#session.removeAttribute('error')}" class="hidden"></span>
         </div>
     </div>
 

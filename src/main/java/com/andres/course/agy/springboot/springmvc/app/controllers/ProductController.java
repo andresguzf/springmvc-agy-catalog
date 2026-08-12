@@ -30,7 +30,7 @@ import java.time.LocalTime;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/products")
+@RequestMapping("/admin/products")
 public class ProductController {
 
     private final ProductService service;
@@ -56,7 +56,7 @@ public class ProductController {
 
         Page<Product> products = service.findBySearchCriteria(query, startDateTime, endDateTime, pageable);
 
-        StringBuilder urlParams = new StringBuilder("/products?");
+        StringBuilder urlParams = new StringBuilder("/admin/products?");
         if (query != null && !query.trim().isEmpty()) {
             urlParams.append("query=").append(URLEncoder.encode(query.trim(), StandardCharsets.UTF_8)).append("&");
         }
@@ -74,7 +74,7 @@ public class ProductController {
 
         PageRender<Product> pageRender = new PageRender<>(pageUrl, products);
 
-        model.addAttribute("title", "Catálogo de Productos | Spring Web MVC");
+        model.addAttribute("title", "Administración de Productos | Spring Web MVC");
         model.addAttribute("products", products);
         model.addAttribute("page", pageRender);
         model.addAttribute("query", query != null ? query.trim() : "");
@@ -99,7 +99,7 @@ public class ProductController {
             return "products/detail";
         }).orElseGet(() -> {
             redirect.addFlashAttribute("error", "El producto especificado no existe.");
-            return "redirect:/products";
+            return "redirect:/admin/products";
         });
     }
 
@@ -111,7 +111,7 @@ public class ProductController {
             return "products/form";
         }).orElseGet(() -> {
             redirect.addFlashAttribute("error", "El producto especificado no existe.");
-            return "redirect:/products";
+            return "redirect:/admin/products";
         });
     }
 
@@ -146,7 +146,7 @@ public class ProductController {
                 product.setImagePublicId(publicId);
             } catch (Exception e) {
                 redirect.addFlashAttribute("error", "Error al subir la imagen a Cloudinary: " + e.getMessage());
-                return "redirect:/products/form" + (product.getId() != null ? "/" + product.getId() : "");
+                return "redirect:/admin/products/form" + (product.getId() != null ? "/" + product.getId() : "");
             }
         }
 
@@ -154,7 +154,7 @@ public class ProductController {
         service.save(product);
         redirect.addFlashAttribute("success",
                 "El producto '" + product.getName() + "' ha sido " + actionMessage + " con éxito.");
-        return "redirect:/products";
+        return "redirect:/admin/products";
     }
 
     @GetMapping("/delete/{id}")
@@ -173,6 +173,6 @@ public class ProductController {
         } else {
             redirect.addFlashAttribute("error", "El producto especificado no existe.");
         }
-        return "redirect:/products";
+        return "redirect:/admin/products";
     }
 }
