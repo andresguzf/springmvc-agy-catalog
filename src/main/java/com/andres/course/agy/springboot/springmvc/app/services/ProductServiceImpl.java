@@ -4,6 +4,7 @@ import com.andres.course.agy.springboot.springmvc.app.models.Product;
 import com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository;
 import com.andres.course.agy.springboot.springmvc.app.repositories.specs.ProductSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,12 +33,18 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<Product> findAll(Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.asc("id"), Sort.Order.asc("createdAt")));
+        }
         return repository.findAll(pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<Product> findBySearchCriteria(String query, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Order.asc("id"), Sort.Order.asc("createdAt")));
+        }
         Specification<Product> spec = ProductSpecification.filterByCriteria(query, startDate, endDate);
         return repository.findAll(spec, pageable);
     }
