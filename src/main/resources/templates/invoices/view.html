@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es"
+      th:replace="~{layouts/admin-layout :: adminLayout(${title}, 'invoices', ~{::main})}">
+<head>
+    <title>Detalle de Factura</title>
+</head>
+<body>
+
+    <main class="space-y-6 max-w-4xl mx-auto">
+
+        <!-- Top Actions Bar -->
+        <div class="flex items-center justify-between gap-4">
+            <a th:href="@{/admin/invoices}"
+               class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-xs transition flex items-center gap-2">
+                ← Volver a Facturas
+            </a>
+
+            <div class="flex items-center gap-3">
+                <a th:href="@{/admin/invoices/view/{id}(id=${invoice.id}, format='pdf')}"
+                   class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-600/20 transition flex items-center gap-2">
+                    📄 Descargar PDF
+                </a>
+                <button type="button" onclick="window.print()"
+                        class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition flex items-center gap-2 cursor-pointer">
+                    🖨️ Imprimir
+                </button>
+            </div>
+        </div>
+
+        <!-- Printable Invoice Container -->
+        <div id="invoicePrintArea" class="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl space-y-8 backdrop-blur">
+            
+            <!-- Invoice Letterhead Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b border-slate-800">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-600 to-emerald-500 flex items-center justify-center font-black text-slate-950 text-2xl shadow-lg">
+                            🛡️
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-100">TIENDA ONLINE E-COMMERCE</h2>
+                            <p class="text-xs text-slate-400 font-mono">RUT Empresa: 76.543.210-9</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400">Av. Principal 123, Santiago, Chile &bull; Tel: +56 9 1234 5678</p>
+                </div>
+
+                <!-- Invoice Number Box -->
+                <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 text-right space-y-1 min-w-[200px]">
+                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block font-mono">FACTURA ELECTRÓNICA</span>
+                    <span class="text-2xl font-black text-slate-100 font-mono block" th:text="${'N° ' + #numbers.formatInteger(invoice.id, 6)}">N° 000001</span>
+                    <span class="text-xs text-slate-400 font-mono block" th:text="${'Fecha: ' + (invoice.createdAt != null ? #temporals.format(invoice.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A')}">Fecha: 12/08/2026</span>
+                </div>
+            </div>
+
+            <!-- Customer & Invoice Metadata Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl bg-slate-950/80 border border-slate-800/80 text-xs">
+                <div class="space-y-2">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Datos del Cliente / Empresa</span>
+                    <div class="space-y-1">
+                        <p class="text-sm font-bold text-slate-100" th:text="${invoice.customerName}">Cliente Nombre</p>
+                        <p class="text-slate-400 font-mono" th:text="${'RUT / Id Fiscal: ' + (invoice.taxId != null and !invoice.taxId.isBlank() ? invoice.taxId : 'N/A')}">RUT: 76.543.210-9</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2 md:text-right">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Detalles de Emisión</span>
+                    <div class="space-y-1">
+                        <p class="text-slate-300"><span class="text-slate-500">Descripción:</span> <span class="font-semibold text-slate-200" th:text="${invoice.description}">Descripción</span></p>
+                        <p class="text-slate-300"><span class="text-slate-500">Emitido por:</span> <span class="font-mono font-bold text-purple-300" th:text="${invoice.user != null ? invoice.user.name + ' (' + invoice.user.username + ')' : 'N/A'}">admin</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Detalle de Productos Facturados</h3>
+                
+                <div class="rounded-2xl border border-slate-800 overflow-hidden">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 uppercase tracking-wider text-slate-400 font-mono border-b border-slate-800">
+                            <tr>
+                                <th scope="col" class="py-3.5 px-6">Producto</th>
+                                <th scope="col" class="py-3.5 px-6 text-right">Precio Unitario</th>
+                                <th scope="col" class="py-3.5 px-6 text-center">Cantidad</th>
+                                <th scope="col" class="py-3.5 px-6 text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-sans">
+                            <tr th:each="item : ${invoice.items}" class="hover:bg-slate-950/40">
+                                <td class="py-4 px-6 font-bold text-slate-100" th:text="${item.product != null ? item.product.name : 'N/A'}">Producto</td>
+                                <td class="py-4 px-6 text-right font-mono text-slate-300" th:text="${'$' + #numbers.formatDecimal(item.product != null ? item.product.price : 0, 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                                <td class="py-4 px-6 text-center font-mono font-bold text-slate-200" th:text="${item.quantity}">1</td>
+                                <td class="py-4 px-6 text-right font-mono font-bold text-emerald-400" th:text="${'$' + #numbers.formatDecimal(item.calculateImport(), 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Invoice Totals & Notes -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 pt-4">
+                <div class="space-y-1 max-w-md">
+                    <span th:if="${invoice.observation != null and !invoice.observation.isBlank()}" class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">Observaciones:</span>
+                    <p th:if="${invoice.observation != null and !invoice.observation.isBlank()}" class="text-xs text-slate-400 leading-relaxed bg-slate-950/60 p-3 rounded-xl border border-slate-800" th:text="${invoice.observation}">
+                        Notas de la factura...
+                    </p>
+                </div>
+
+                <div class="w-full sm:w-auto p-5 rounded-2xl bg-slate-950 border border-slate-800 text-right space-y-2">
+                    <div class="flex items-center justify-between gap-6 text-xs text-slate-400">
+                        <span>Subtotal Neto:</span>
+                        <span class="font-mono text-slate-200" th:text="${'$' + #numbers.formatDecimal(invoice.total, 1, 'POINT', 2, 'COMMA')}">$0.00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-6 text-xs text-slate-400 pb-2 border-b border-slate-800">
+                        <span>IVA (0% Exento):</span>
+                        <span class="font-mono text-slate-200">$0.00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-6 text-base font-black text-emerald-400">
+                        <span>TOTAL FACTURA:</span>
+                        <span class="font-mono text-xl" th:text="${'$' + #numbers.formatDecimal(invoice.total, 1, 'POINT', 2, 'COMMA')}">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es"
+      th:replace="~{layouts/admin-layout :: adminLayout(${title}, 'invoices', ~{::main})}">
+<head>
+    <title>Gestión de Facturas</title>
+</head>
+<body>
+
+    <main class="space-y-6">
+
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800 backdrop-blur shadow-xl">
+            <div>
+                <h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+                    🧾 Gestión de Facturación
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">
+                    Emisión y consulta de comprobantes de venta con sincronización de inventario.
+                </p>
+            </div>
+            
+            <a th:href="@{/admin/invoices/form}"
+               class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+                <span>➕ Emitir Nueva Factura</span>
+            </a>
+        </div>
+
+        <!-- Invoices List Table -->
+        <div class="bg-slate-900/60 rounded-2xl border border-slate-800 shadow-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950/80 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800 font-mono">
+                        <tr>
+                            <th scope="col" class="py-4 px-6 text-center">N° Factura</th>
+                            <th scope="col" class="py-4 px-6">Cliente / Empresa</th>
+                            <th scope="col" class="py-4 px-6">RUT / Id Fiscal</th>
+                            <th scope="col" class="py-4 px-6">Descripción</th>
+                            <th scope="col" class="py-4 px-6">Emisor</th>
+                            <th scope="col" class="py-4 px-6">Fecha</th>
+                            <th scope="col" class="py-4 px-6 text-right">Total</th>
+                            <th scope="col" class="py-4 px-6 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800/60 font-sans">
+                        <tr th:each="invoice : ${invoices}" class="hover:bg-slate-800/40 transition-colors group">
+                            <!-- Invoice ID -->
+                            <td class="py-4 px-6 text-center font-mono font-bold text-emerald-400 text-xs"
+                                th:text="${'#' + #numbers.formatInteger(invoice.id, 6)}">
+                                #000001
+                            </td>
+
+                            <!-- Customer Name -->
+                            <td class="py-4 px-6 font-bold text-slate-100 group-hover:text-emerald-400 transition-colors"
+                                th:text="${invoice.customerName}">
+                                Cliente Nombre
+                            </td>
+
+                            <!-- Tax ID -->
+                            <td class="py-4 px-6 font-mono text-xs text-slate-400"
+                                th:text="${invoice.taxId != null and !invoice.taxId.isBlank() ? invoice.taxId : 'N/A'}">
+                                76.543.210-9
+                            </td>
+
+                            <!-- Description -->
+                            <td class="py-4 px-6 text-slate-300 text-xs max-w-xs truncate"
+                                th:text="${invoice.description}">
+                                Venta de equipos informáticos
+                            </td>
+
+                            <!-- Issuer User -->
+                            <td class="py-4 px-6">
+                                <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-800 text-slate-300 border border-slate-700 font-mono inline-flex items-center gap-1"
+                                      th:text="${invoice.user != null ? invoice.user.username : 'N/A'}">
+                                    admin
+                                </span>
+                            </td>
+
+                            <!-- Date -->
+                            <td class="py-4 px-6 text-slate-400 text-xs font-mono whitespace-nowrap"
+                                th:text="${invoice.createdAt != null ? #temporals.format(invoice.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}">
+                                12/08/2026 18:00
+                            </td>
+
+                            <!-- Total Amount -->
+                            <td class="py-4 px-6 text-right font-mono font-extrabold text-slate-100 text-sm"
+                                th:text="${'$' + #numbers.formatDecimal(invoice.total, 1, 'POINT', 2, 'COMMA')}">
+                                $0.00
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a th:href="@{/admin/invoices/view/{id}(id=${invoice.id})}"
+                                       class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 font-bold text-xs transition">
+                                        👁️ Ver
+                                    </a>
+
+                                    <a th:href="@{/admin/invoices/view/{id}(id=${invoice.id}, format='pdf')}"
+                                       class="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-600 hover:text-white font-bold text-xs transition"
+                                       title="Descargar versión en PDF">
+                                        📄 PDF
+                                    </a>
+
+                                    <button th:if="${isAdmin}"
+                                            type="button"
+                                            th:onclick="confirmDelete('/admin/invoices/delete/' + [[${invoice.id}]], '¿Eliminar Factura N° ' + [[${invoice.id}]] + '?', 'Esta acción restaurará el stock de los productos asociados en el catálogo.')"
+                                            class="px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-600 hover:text-white font-bold text-xs transition cursor-pointer">
+                                        🗑️ Eliminar
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(invoices)}">
+                            <td colspan="8" class="py-12 text-center text-slate-400 space-y-3">
+                                <div class="text-4xl">🧾</div>
+                                <p class="text-base font-medium">No hay facturas emitidas registradas en el sistema.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:replace="~{layout/paginator :: paginator}"></nav>
+
+    </main>
+
+</body>
+</html>

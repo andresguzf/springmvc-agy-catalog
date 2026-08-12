@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es"
+      th:replace="~{layouts/admin-layout :: adminLayout(${title}, 'invoices', ~{::main})}">
+<head>
+    <title>Emitir Nueva Factura</title>
+</head>
+<body>
+
+    <main class="space-y-6 max-w-5xl mx-auto">
+
+        <!-- Form Card Container -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur">
+            
+            <!-- Header -->
+            <div class="flex items-center gap-4 pb-6 border-b border-slate-800">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-slate-950 font-black text-2xl shadow-lg shadow-emerald-500/20">
+                    🧾
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-100">Emitir Comprobante de Facturación</h1>
+                    <p class="text-xs text-slate-400">Ingresa los datos del cliente y selecciona los productos del catálogo.</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form th:action="@{/admin/invoices/form}" th:object="${invoice}" method="post" id="invoiceForm" class="space-y-8 pt-6">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Customer Name -->
+                    <div class="space-y-2">
+                        <label for="customerName" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                            Cliente / Razón Social *
+                        </label>
+                        <input type="text" id="customerName" th:field="*{customerName}"
+                               placeholder="Ej. Comercial Empresa SpA o Juan Pérez"
+                               class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-sm font-medium" />
+                        <span th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}" class="text-xs text-rose-400 font-semibold block"></span>
+                    </div>
+
+                    <!-- Tax ID -->
+                    <div class="space-y-2">
+                        <label for="taxId" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                            RUT / Identificador Fiscal
+                        </label>
+                        <input type="text" id="taxId" th:field="*{taxId}"
+                               placeholder="Ej. 76.543.210-9"
+                               class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-sm font-mono" />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="space-y-2 md:col-span-2">
+                        <label for="description" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                            Descripción de la Factura *
+                        </label>
+                        <input type="text" id="description" th:field="*{description}"
+                               placeholder="Ej. Facturación por compra de suministros y equipamiento"
+                               class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-sm font-medium" />
+                        <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="text-xs text-rose-400 font-semibold block"></span>
+                    </div>
+
+                    <!-- Observation -->
+                    <div class="space-y-2 md:col-span-2">
+                        <label for="observation" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                            Observaciones (Opcional)
+                        </label>
+                        <textarea id="observation" th:field="*{observation}" rows="2"
+                                  placeholder="Notas adicionales o términos de pago..."
+                                  class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-sm font-medium"></textarea>
+                    </div>
+
+                </div>
+
+                <!-- Product Autocomplete Search Box -->
+                <div class="space-y-3 pt-6 border-t border-slate-800 relative">
+                    <label for="search_product" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                        🔍 Buscar y Agregar Producto del Catálogo *
+                    </label>
+                    <input type="text" id="search_product" autocomplete="off"
+                           placeholder="Escribe el nombre del producto para buscar..."
+                           class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-sm font-medium" />
+                    
+                    <!-- Autocomplete Dropdown Results -->
+                    <div id="autocomplete_results"
+                         class="hidden absolute z-50 left-0 right-0 top-full mt-2 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden max-h-60 overflow-y-auto divide-y divide-slate-800">
+                    </div>
+                </div>
+
+                <!-- Invoice Items Table -->
+                <div class="space-y-3">
+                    <h3 class="text-sm font-bold text-slate-200 uppercase tracking-wider">Ítems de la Factura</h3>
+                    
+                    <div class="bg-slate-950/80 rounded-2xl border border-slate-800 overflow-hidden">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-900 text-xs uppercase tracking-wider text-slate-400 font-mono border-b border-slate-800">
+                                <tr>
+                                    <th scope="col" class="py-3.5 px-6">Producto</th>
+                                    <th scope="col" class="py-3.5 px-6">Precio Unit.</th>
+                                    <th scope="col" class="py-3.5 px-6 text-center w-36">Cantidad</th>
+                                    <th scope="col" class="py-3.5 px-6 text-right">Subtotal</th>
+                                    <th scope="col" class="py-3.5 px-6 text-center w-20">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice_items_table" class="divide-y divide-slate-800/60 font-sans">
+                                <!-- Dynamic JS Rows Injected Here -->
+                            </tbody>
+                        </table>
+
+                        <!-- Empty Table Notice -->
+                        <div id="empty_items_notice" class="p-8 text-center text-slate-500 text-sm font-medium">
+                            No se han agregado productos a la factura. Utiliza el buscador arriba para incorporar ítems.
+                        </div>
+                    </div>
+
+                    <!-- Total Banner -->
+                    <div class="flex items-center justify-end p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-right gap-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total a Facturar:</span>
+                        <span id="grand_total" class="text-2xl font-black text-emerald-400 font-mono">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-800">
+                    <a th:href="@{/admin/invoices}" class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-sm transition">
+                        ← Cancelar
+                    </a>
+                    <button type="submit" id="btnSubmitInvoice"
+                            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition cursor-pointer">
+                        💾 Generar Factura
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <!-- Autocomplete and Dynamic Items JS Script -->
+    <script>
+        const searchInput = document.getElementById('search_product');
+        const resultsBox = document.getElementById('autocomplete_results');
+        const itemsTable = document.getElementById('invoice_items_table');
+        const emptyNotice = document.getElementById('empty_items_notice');
+        const grandTotalElem = document.getElementById('grand_total');
+
+        searchInput.addEventListener('input', function() {
+            const term = this.value.trim();
+            if (term.length < 2) {
+                resultsBox.classList.add('hidden');
+                resultsBox.innerHTML = '';
+                return;
+            }
+
+            fetch('/admin/invoices/load-products/' + encodeURIComponent(term))
+                .then(response => response.json())
+                .then(products => {
+                    resultsBox.innerHTML = '';
+                    if (products.length === 0) {
+                        resultsBox.innerHTML = '<div class="p-4 text-xs text-slate-500 text-center font-mono">Sin resultados encontrados</div>';
+                    } else {
+                        products.forEach(p => {
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'p-3.5 hover:bg-slate-800 transition cursor-pointer flex items-center justify-between';
+                            itemDiv.innerHTML = `
+                                <div>
+                                    <span class="font-bold text-sm text-slate-100 block">${p.name}</span>
+                                    <span class="text-xs text-slate-400 font-mono">Stock Disponible: ${p.stock} unids.</span>
+                                </div>
+                                <span class="font-mono font-bold text-emerald-400 text-sm">$${p.price.toFixed(2)}</span>
+                            `;
+                            itemDiv.onclick = function() {
+                                addProductToInvoice(p);
+                                searchInput.value = '';
+                                resultsBox.classList.add('hidden');
+                            };
+                            resultsBox.appendChild(itemDiv);
+                        });
+                    }
+                    resultsBox.classList.remove('hidden');
+                });
+        });
+
+        function addProductToInvoice(product) {
+            // Check if product already exists in table
+            if (document.getElementById('row_' + product.id)) {
+                const qtyInput = document.getElementById('qty_' + product.id);
+                let currentQty = parseInt(qtyInput.value) || 1;
+                if (currentQty < product.stock) {
+                    qtyInput.value = currentQty + 1;
+                    updateItemRow(product.id, product.price, product.stock);
+                } else {
+                    showProtectedAlert('Límite de stock alcanzado para ' + product.name);
+                }
+                return;
+            }
+
+            emptyNotice.classList.add('hidden');
+
+            const tr = document.createElement('tr');
+            tr.id = 'row_' + product.id;
+            tr.className = 'hover:bg-slate-900/50 transition';
+            tr.innerHTML = `
+                <td class="py-3.5 px-6 font-bold text-slate-100">
+                    <input type="hidden" name="item_id[]" value="${product.id}" />
+                    ${product.name}
+                </td>
+                <td class="py-3.5 px-6 font-mono text-slate-300">$${product.price.toFixed(2)}</td>
+                <td class="py-3.5 px-6 text-center">
+                    <input type="number" name="quantity[]" id="qty_${product.id}" value="1" min="1" max="${product.stock}"
+                           onchange="updateItemRow(${product.id}, ${product.price}, ${product.stock})"
+                           oninput="updateItemRow(${product.id}, ${product.price}, ${product.stock})"
+                           class="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-center font-mono focus:outline-none focus:border-emerald-500 text-xs font-bold" />
+                </td>
+                <td class="py-3.5 px-6 text-right font-mono font-bold text-emerald-400 text-sm" id="subtotal_${product.id}">
+                    $${product.price.toFixed(2)}
+                </td>
+                <td class="py-3.5 px-6 text-center">
+                    <button type="button" onclick="removeRow(${product.id})" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white transition cursor-pointer text-xs font-bold">
+                        🗑️
+                    </button>
+                </td>
+            `;
+
+            itemsTable.appendChild(tr);
+            calculateGrandTotal();
+        }
+
+        function updateItemRow(productId, price, stock) {
+            const qtyInput = document.getElementById('qty_' + productId);
+            let qty = parseInt(qtyInput.value) || 1;
+            if (qty > stock) {
+                qty = stock;
+                qtyInput.value = stock;
+                showProtectedAlert('No puedes facturar más de ' + stock + ' unidades disponibles en stock.');
+            }
+            if (qty < 1) {
+                qty = 1;
+                qtyInput.value = 1;
+            }
+
+            const subtotal = price * qty;
+            document.getElementById('subtotal_' + productId).textContent = '$' + subtotal.toFixed(2);
+            calculateGrandTotal();
+        }
+
+        function removeRow(productId) {
+            const row = document.getElementById('row_' + productId);
+            if (row) {
+                row.remove();
+            }
+            if (itemsTable.children.length === 0) {
+                emptyNotice.classList.remove('hidden');
+            }
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            let total = 0;
+            const rows = itemsTable.querySelectorAll('tr');
+            rows.forEach(r => {
+                const subtotalText = r.querySelector('[id^="subtotal_"]').textContent.replace('$', '');
+                total += parseFloat(subtotalText) || 0;
+            });
+            grandTotalElem.textContent = '$' + total.toFixed(2);
+        }
+
+        // Hide autocomplete on click outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
+                resultsBox.classList.add('hidden');
+            }
+        });
+    </script>
+
+</body>
+</html>

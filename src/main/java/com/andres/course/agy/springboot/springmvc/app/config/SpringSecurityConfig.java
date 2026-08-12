@@ -29,6 +29,7 @@ public class SpringSecurityConfig {
                     "/admin/products/detail/**", "/admin/products/view/**",
                     "/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico"
                 ).permitAll()
+                .requestMatchers("/admin/invoices/**").hasAnyRole("ADMIN", "BILLING")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
