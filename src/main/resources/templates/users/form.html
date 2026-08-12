@@ -91,7 +91,7 @@
 
                                     <input th:unless="${role.name == 'ROLE_ADMIN' and !isNew and user.roles != null and user.roles.contains(role) and activeAdminsCount <= 1}"
                                            type="checkbox" name="roleIds" th:value="${role.id}"
-                                           th:checked="${user.roles != null and user.roles.contains(role)}"
+                                           th:checked="${(selectedRoleIds != null and selectedRoleIds.contains(role.id)) or (user.roles != null and user.roles.contains(role))}"
                                            class="mt-1 w-4 h-4 rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-emerald-500 cursor-pointer" />
                                     <div>
                                         <span class="block font-bold text-sm text-slate-100" th:text="${role.name}">ROLE_USER</span>

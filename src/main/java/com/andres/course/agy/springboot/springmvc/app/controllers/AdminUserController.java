@@ -120,25 +120,29 @@ public class AdminUserController {
             }
         }
 
+        // Assign selected roles and pass to model so checkmarks persist on validation errors
+        List<Role> selectedRoles = new ArrayList<>();
+        List<Role> allRoles = userService.findAllRoles();
+        if (roleIds != null && !roleIds.isEmpty()) {
+            for (Role r : allRoles) {
+                if (roleIds.contains(r.getId())) {
+                    selectedRoles.add(r);
+                }
+            }
+        }
+        user.setRoles(selectedRoles);
+
         if (roleIds == null || roleIds.isEmpty()) {
             model.addAttribute("roleError", "Debes seleccionar al menos un rol para el usuario.");
         }
 
         if (result.hasErrors() || roleIds == null || roleIds.isEmpty()) {
             model.addAttribute("title", isNew ? "Crear Nuevo Usuario" : "Editar Usuario");
-            model.addAttribute("allRoles", userService.findAllRoles());
+            model.addAttribute("allRoles", allRoles);
             model.addAttribute("activeAdminsCount", userService.countActiveAdmins());
+            model.addAttribute("selectedRoleIds", roleIds != null ? roleIds : new ArrayList<>());
             model.addAttribute("isNew", isNew);
             return "users/form";
-        }
-
-        // Assign selected roles
-        List<Role> selectedRoles = new ArrayList<>();
-        List<Role> allRoles = userService.findAllRoles();
-        for (Role r : allRoles) {
-            if (roleIds.contains(r.getId())) {
-                selectedRoles.add(r);
-            }
         }
 
         // Protection: Ensure at least one active admin exists in the system
@@ -153,16 +157,15 @@ public class AdminUserController {
                     if (activeAdmins <= 1) {
                         model.addAttribute("roleError", "No se puede remover el rol ROLE_ADMIN: Debe existir al menos un administrador activo en el sistema.");
                         model.addAttribute("title", "Editar Usuario");
-                        model.addAttribute("allRoles", userService.findAllRoles());
+                        model.addAttribute("allRoles", allRoles);
                         model.addAttribute("activeAdminsCount", activeAdmins);
+                        model.addAttribute("selectedRoleIds", roleIds);
                         model.addAttribute("isNew", false);
                         return "users/form";
                     }
                 }
             }
         }
-
-        user.setRoles(selectedRoles);
 
         userService.save(user);
         flash.addFlashAttribute("success", isNew ? "Usuario creado con éxito." : "Usuario actualizado con éxito.");
