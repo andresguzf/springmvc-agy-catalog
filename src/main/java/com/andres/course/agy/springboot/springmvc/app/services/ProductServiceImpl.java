@@ -5,6 +5,7 @@ import com.andres.course.agy.springboot.springmvc.app.repositories.ProductReposi
 import com.andres.course.agy.springboot.springmvc.app.repositories.specs.ProductSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public List<Product> findAll() {
-        return repository.findAll();
+        return repository.findAll(Sort.by(Sort.Order.asc("id"), Sort.Order.asc("createdAt")));
     }
 
     @Override
