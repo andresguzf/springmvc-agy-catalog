@@ -68,12 +68,15 @@ src/main/java/com/andres/course/agy/springboot/springmvc/app/
 
 4. **Flujo de Checkout y Registro de Órdenes de Compra (`/cart/checkout`):**
    - **Formulario de Comprador**: Captura Nombre, Apellido, RUT, Email, Teléfono, Dirección, Ciudad, Método de Despacho (Estándar, Express, Retiro) y Método de Pago ficticio (Tarjeta, Transferencia, Mercado Pago).
-   - **Generación de Factura / Orden**: El proceso genera automáticamente un registro de factura (`Invoice`), descuenta el inventario de los productos comprados, vacía el carrito de sesión y redirige al usuario a su comprobante de compra.
+   - **Generación de Orden en Estado Inicial (`EN_PROCESO`)**: El proceso genera un registro de orden de compra (`Invoice`) con estado inicial `EN_PROCESO`, descuenta el stock de productos, vacía el carrito de sesión y redirige al comprobante del usuario.
 
-5. **Historial de Compras de Usuarios (`/user/orders`):**
-   - Cualquier usuario autenticado puede consultar su propio historial de órdenes en `/user/orders` o mediante la opción **"🛍️ Mis Compras"** en la barra superior o lateral.
-   - Aislamiento estricto de compras: Cada usuario únicamente puede visualizar sus propias órdenes (los administradores pueden consultar todas las órdenes del sistema).
-   - Descarga de comprobantes en PDF con membrete corporativo dinámico (`GET /user/orders/view/{id}?format=pdf`).
+5. **Gestión de Órdenes y Emisión de Facturas (`ROLE_ADMIN` / `ROLE_BILLING`):**
+   - Los usuarios con `ROLE_ADMIN` y `ROLE_BILLING` visualizan **todas** las órdenes generadas por los clientes en el sistema (`/admin/invoices`).
+   - Endpoint de emisión `GET /admin/invoices/emit/{id}`: Cambia el estado de la orden de `EN_PROCESO` a `FACTURADO`.
+
+6. **Historial de Compras de Usuarios (`/user/orders`):**
+   - Cualquier usuario autenticado puede consultar su propio historial de órdenes en `/user/orders` o mediante **"🛍️ Mis Compras"**.
+   - **Ciclo del PDF**: Si la orden se encuentra `EN_PROCESO`, muestra badge informativo. Una vez emitida y cambiada a `FACTURADO` por el área administrativa, se habilita la descarga de la factura oficial en PDF (`GET /user/orders/view/{id}?format=pdf`).
 
 5. **Exportación a PDF:**
    - Endpoint `GET /admin/invoices/view/{id}?format=pdf` genera y descarga un comprobante PDF oficial utilizando OpenPDF.

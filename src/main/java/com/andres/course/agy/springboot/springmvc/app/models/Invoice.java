@@ -46,6 +46,9 @@ public class Invoice implements Serializable {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(length = 30)
+    private String status = "EN_PROCESO";
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -61,6 +64,9 @@ public class Invoice implements Serializable {
     public void prePersist() {
         if (this.createdAt == null) {
             this.createdAt = LocalDateTime.now();
+        }
+        if (this.status == null || this.status.isBlank()) {
+            this.status = "EN_PROCESO";
         }
     }
 
@@ -110,6 +116,14 @@ public class Invoice implements Serializable {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public User getUser() {

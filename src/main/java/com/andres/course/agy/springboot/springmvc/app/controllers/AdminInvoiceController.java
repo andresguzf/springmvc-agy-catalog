@@ -225,6 +225,25 @@ public class AdminInvoiceController {
         return "invoices/view";
     }
 
+    @GetMapping("/emit/{id}")
+    public String emitInvoice(@PathVariable Long id,
+                              Authentication authentication,
+                              RedirectAttributes flash) {
+
+        Optional<Invoice> invoiceOpt = invoiceService.findById(id);
+        if (invoiceOpt.isEmpty()) {
+            flash.addFlashAttribute("error", "La orden o factura no existe.");
+            return "redirect:/admin/invoices";
+        }
+
+        Invoice invoice = invoiceOpt.get();
+        invoice.setStatus("FACTURADO");
+        invoiceService.save(invoice);
+
+        flash.addFlashAttribute("success", "Factura N° " + id + " emitida oficialmente con éxito. El cliente ya puede consultar y descargar su factura PDF.");
+        return "redirect:/admin/invoices/view/" + id;
+    }
+
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id,
                          Authentication authentication,

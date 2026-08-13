@@ -18,6 +18,11 @@
             </a>
 
             <div class="flex items-center gap-3">
+                <a th:unless="${invoice.status == 'FACTURADO'}"
+                   th:href="@{/admin/invoices/emit/{id}(id=${invoice.id})}"
+                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+                    ⚡ Emitir Factura Oficial
+                </a>
                 <a th:href="@{/admin/invoices/view/{id}(id=${invoice.id}, format='pdf')}"
                    class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-600/20 transition flex items-center gap-2">
                     📄 Descargar PDF
@@ -51,8 +56,9 @@
                 </div>
 
                 <!-- Invoice Number Box -->
-                <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 text-right space-y-1 min-w-[200px]">
-                    <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block font-mono">FACTURA ELECTRÓNICA</span>
+                <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 text-right space-y-1 min-w-[220px]">
+                    <span th:if="${invoice.status == 'FACTURADO'}" class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block font-mono">✅ FACTURA ELECTRÓNICA</span>
+                    <span th:unless="${invoice.status == 'FACTURADO'}" class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block font-mono">⏳ ORDEN EN PROCESO DE FACTURACIÓN</span>
                     <span class="text-2xl font-black text-slate-100 font-mono block" th:text="${'N° ' + #numbers.formatInteger(invoice.id, 6)}">N° 000001</span>
                     <span class="text-xs text-slate-400 font-mono block" th:text="${'Fecha: ' + (invoice.createdAt != null ? #temporals.format(invoice.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A')}">Fecha: 12/08/2026</span>
                 </div>

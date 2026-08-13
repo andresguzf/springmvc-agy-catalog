@@ -48,6 +48,7 @@
                             <th scope="col" class="py-4 px-6">N° Orden</th>
                             <th scope="col" class="py-4 px-6">Fecha</th>
                             <th scope="col" class="py-4 px-6">Detalles / Despacho</th>
+                            <th scope="col" class="py-4 px-6 text-center">Estado</th>
                             <th scope="col" class="py-4 px-6 text-right">Total</th>
                             <th scope="col" class="py-4 px-6 text-center">Acciones</th>
                         </tr>
@@ -72,6 +73,18 @@
                                 <span class="text-[11px] text-slate-400 block truncate" th:text="${invoice.observation}">Detalles</span>
                             </td>
 
+                            <!-- Order Status Badge -->
+                            <td class="py-4 px-6 text-center whitespace-nowrap">
+                                <span th:if="${invoice.status == 'FACTURADO'}"
+                                      class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    ✅ FACTURADO
+                                </span>
+                                <span th:unless="${invoice.status == 'FACTURADO'}"
+                                      class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                    ⏳ EN PROCESO
+                                </span>
+                            </td>
+
                             <!-- Total -->
                             <td class="py-4 px-6 text-right font-mono font-extrabold text-slate-100 text-sm whitespace-nowrap"
                                 th:text="${'$' + #numbers.formatDecimal(invoice.total, 1, 'POINT', 2, 'COMMA')}">
@@ -82,14 +95,21 @@
                             <td class="py-4 px-6 text-center whitespace-nowrap">
                                 <div class="inline-flex items-center gap-2">
                                     <a th:href="@{/user/orders/view/{id}(id=${invoice.id})}"
-                                       class="px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500 text-emerald-400 hover:text-slate-950 font-bold text-xs transition flex items-center gap-1">
+                                       class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition flex items-center gap-1">
                                         👁️ Ver Detalle
                                     </a>
-                                    <a th:href="@{/user/orders/view/{id}(id=${invoice.id}, format='pdf')}"
-                                       class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs transition flex items-center gap-1"
-                                       title="Descargar Comprobante PDF">
-                                        📄 PDF
+
+                                    <a th:if="${invoice.status == 'FACTURADO'}"
+                                       th:href="@{/user/orders/view/{id}(id=${invoice.id}, format='pdf')}"
+                                       class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs transition flex items-center gap-1 shadow-md"
+                                       title="Descargar Factura Oficial PDF">
+                                        📄 Factura PDF
                                     </a>
+                                    <span th:unless="${invoice.status == 'FACTURADO'}"
+                                          class="px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-500 text-xs font-medium cursor-not-allowed"
+                                          title="La factura estará disponible en PDF una vez sea emitida por administración">
+                                        ⏳ Pendiente Factura
+                                    </span>
                                 </div>
                             </td>
                         </tr>
