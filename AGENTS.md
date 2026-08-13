@@ -66,12 +66,14 @@ src/main/java/com/andres/course/agy/springboot/springmvc/app/
 3. **Gestión de Contraseña en Edición de Usuarios:**
    - La contraseña es obligatoria al crear un nuevo usuario (`isNew == true`), pero opcional al editar (`isNew == false`). Si el campo queda en blanco al editar, se preserva el hash BCrypt existente.
 
-4. **Sistema de Facturación (Invoices) y Aislamiento por Rol:**
-   - **Formulario dinámico con autocompletado:** Endpoint `GET /admin/invoices/load-products?term=...` para búsqueda en tiempo real.
-   - **Cálculo exacto con `data-subtotal`:** Cada fila en la tabla de ítems almacena su valor numérico puro en `data-subtotal` para evitar errores de parseo por símbolos de moneda o locales.
-   - **Descuento y restauración de stock:** Crear una factura descuenta stock del catálogo (`stock - cantidad`). Eliminar una factura restaura el stock.
-   - **Repoblación en caso de error de validación:** Si el formulario falla al validar, los ítems seleccionados se preservan y repoblan mediante `selectedItems`.
-   - **Aislamiento por rol:** Usuarios con `ROLE_BILLING` solo ven y gestionan sus facturas emitidas. Usuarios con `ROLE_ADMIN` pueden consultar y gestionar todas las facturas del sistema.
+4. **Flujo de Checkout y Registro de Órdenes de Compra (`/cart/checkout`):**
+   - **Formulario de Comprador**: Captura Nombre, Apellido, RUT, Email, Teléfono, Dirección, Ciudad, Método de Despacho (Estándar, Express, Retiro) y Método de Pago ficticio (Tarjeta, Transferencia, Mercado Pago).
+   - **Generación de Factura / Orden**: El proceso genera automáticamente un registro de factura (`Invoice`), descuenta el inventario de los productos comprados, vacía el carrito de sesión y redirige al usuario a su comprobante de compra.
+
+5. **Historial de Compras de Usuarios (`/user/orders`):**
+   - Cualquier usuario autenticado puede consultar su propio historial de órdenes en `/user/orders` o mediante la opción **"🛍️ Mis Compras"** en la barra superior o lateral.
+   - Aislamiento estricto de compras: Cada usuario únicamente puede visualizar sus propias órdenes (los administradores pueden consultar todas las órdenes del sistema).
+   - Descarga de comprobantes en PDF con membrete corporativo dinámico (`GET /user/orders/view/{id}?format=pdf`).
 
 5. **Exportación a PDF:**
    - Endpoint `GET /admin/invoices/view/{id}?format=pdf` genera y descarga un comprobante PDF oficial utilizando OpenPDF.

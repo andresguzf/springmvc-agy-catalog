@@ -32,10 +32,15 @@
                    th:class="${activePage == 'invoices' ? 'text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1 transition' : 'text-slate-400 hover:text-slate-200 transition'}">
                     🧾 Panel Facturación
                 </a>
+                <a sec:authorize="isAuthenticated()"
+                   th:href="@{/user/orders}"
+                   th:class="${activePage == 'my-orders' ? 'text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1 transition' : 'text-slate-400 hover:text-slate-200 transition'}">
+                    🛍️ Mis Compras
+                </a>
                 <a th:href="@{/cart}"
                    th:class="${activePage == 'cart' ? 'text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1 transition flex items-center gap-1.5' : 'text-slate-400 hover:text-slate-200 transition flex items-center gap-1.5'}">
                     🛒 Carrito
-                    <span th:if="${@cart.totalQuantity > 0}"
+                    <span th:if="${@cart.totalQuantity gt 0}"
                           th:text="${@cart.totalQuantity}"
                           class="px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-extrabold text-xs font-mono shadow-md">
                         0

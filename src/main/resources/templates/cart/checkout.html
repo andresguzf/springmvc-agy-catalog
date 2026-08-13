@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es"
+      th:replace="~{layouts/layout :: layout(${title}, 'cart', ~{::main})}">
+<head>
+    <title>Checkout - Finalizar Compra</title>
+</head>
+<body>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-6 py-10 space-y-8">
+
+        <!-- Header Banner Card -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-800/60 p-6 rounded-3xl border border-slate-700/60 shadow-xl">
+            <div class="space-y-1">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
+                    💳 Proceso de Checkout
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-100 tracking-tight">Completa tus datos para Finalizar la Compra</h1>
+                <p class="text-slate-400 text-sm">Ingresa los datos para la orden de compra, dirección de despacho y selecciona el método de pago.</p>
+            </div>
+        </div>
+
+        <form th:action="@{/cart/checkout}" th:object="${checkoutForm}" method="post" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            
+            <!-- Left Column: Checkout Inputs Form (2 Cols) -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Step 1: Customer Information Card -->
+                <div class="bg-slate-800/40 border border-slate-700/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+                    <div class="flex items-center gap-3 pb-4 border-b border-slate-700/60">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-lg">
+                            👤
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-100">1. Datos del Cliente / Comprador</h2>
+                            <p class="text-xs text-slate-400">Información para la orden de compra y comprobante.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        
+                        <!-- First Name -->
+                        <div class="space-y-1.5">
+                            <label for="firstName" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Nombre *
+                            </label>
+                            <input type="text" id="firstName" th:field="*{firstName}"
+                                   placeholder="Ej. Juan"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm font-medium" />
+                            <span th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="text-xs text-rose-400 font-semibold block"></span>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="space-y-1.5">
+                            <label for="lastName" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Apellido *
+                            </label>
+                            <input type="text" id="lastName" th:field="*{lastName}"
+                                   placeholder="Ej. Pérez"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm font-medium" />
+                            <span th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="text-xs text-rose-400 font-semibold block"></span>
+                        </div>
+
+                        <!-- RUT / Tax ID -->
+                        <div class="space-y-1.5">
+                            <label for="rut" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                RUT / Identificador Fiscal *
+                            </label>
+                            <input type="text" id="rut" th:field="*{rut}"
+                                   placeholder="Ej. 12.345.678-9"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm font-mono" />
+                            <span th:if="${#fields.hasErrors('rut')}" th:errors="*{rut}" class="text-xs text-rose-400 font-semibold block"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="space-y-1.5">
+                            <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Correo Electrónico *
+                            </label>
+                            <input type="email" id="email" th:field="*{email}"
+                                   placeholder="Ej. juan.perez@email.com"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm font-medium" />
+                            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-xs text-rose-400 font-semibold block"></span>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="space-y-1.5 sm:col-span-2">
+                            <label for="phone" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Teléfono de Contacto *
+                            </label>
+                            <input type="text" id="phone" th:field="*{phone}"
+                                   placeholder="Ej. +56 9 8765 4321"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm font-mono" />
+                            <span th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-xs text-rose-400 font-semibold block"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Step 2: Shipping Information Card -->
+                <div class="bg-slate-800/40 border border-slate-700/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+                    <div class="flex items-center gap-3 pb-4 border-b border-slate-700/60">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-lg">
+                            🚚
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-100">2. Dirección y Método de Despacho</h2>
+                            <p class="text-xs text-slate-400">Ingresa la dirección para la entrega de tus productos.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        
+                        <!-- Address -->
+                        <div class="space-y-1.5 sm:col-span-2">
+                            <label for="address" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Dirección de Envío *
+                            </label>
+                            <input type="text" id="address" th:field="*{address}"
+                                   placeholder="Ej. Av. Providencia 1234, Depto 502"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm font-medium" />
+                            <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="text-xs text-rose-400 font-semibold block"></span>
+                        </div>
+
+                        <!-- City -->
+                        <div class="space-y-1.5 sm:col-span-2">
+                            <label for="city" class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Ciudad / Comuna *
+                            </label>
+                            <input type="text" id="city" th:field="*{city}"
+                                   placeholder="Ej. Santiago"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 text-sm font-medium" />
+                            <span th:if="${#fields.hasErrors('city')}" th:errors="*{city}" class="text-xs text-rose-400 font-semibold block"></span>
+                        </div>
+
+                        <!-- Shipping Method Selection -->
+                        <div class="space-y-3 sm:col-span-2 pt-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300">
+                                Selecciona Método de Envío *
+                            </label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <label class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-700 hover:border-emerald-500 cursor-pointer transition">
+                                    <input type="radio" th:field="*{shippingMethod}" value="ESTANDAR" class="text-emerald-500 focus:ring-emerald-500" />
+                                    <div>
+                                        <span class="font-bold text-xs text-slate-100 block">Envío Estándar</span>
+                                        <span class="text-[11px] text-emerald-400 font-mono block">24-48 hrs (Gratis)</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-700 hover:border-emerald-500 cursor-pointer transition">
+                                    <input type="radio" th:field="*{shippingMethod}" value="EXPRESS" class="text-emerald-500 focus:ring-emerald-500" />
+                                    <div>
+                                        <span class="font-bold text-xs text-slate-100 block">Envío Express</span>
+                                        <span class="text-[11px] text-emerald-400 font-mono block">Mismo Día (Gratis)</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900 border border-slate-700 hover:border-emerald-500 cursor-pointer transition">
+                                    <input type="radio" th:field="*{shippingMethod}" value="RETIRO" class="text-emerald-500 focus:ring-emerald-500" />
+                                    <div>
+                                        <span class="font-bold text-xs text-slate-100 block">Retiro en Tienda</span>
+                                        <span class="text-[11px] text-slate-400 font-mono block">Sucursal Central</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Step 3: Fictional Payment Method Selection -->
+                <div class="bg-slate-800/40 border border-slate-700/60 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+                    <div class="flex items-center gap-3 pb-4 border-b border-slate-700/60">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-lg">
+                            💰
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-100">3. Método de Pago (Simulación)</h2>
+                            <p class="text-xs text-slate-400">Selecciona el medio de pago simbólico para generar tu orden.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <label class="flex items-center gap-3 p-4 rounded-2xl bg-slate-900 border border-slate-700 hover:border-emerald-500 cursor-pointer transition">
+                            <input type="radio" th:field="*{paymentMethod}" value="TARJETA" class="text-emerald-500 focus:ring-emerald-500" />
+                            <div>
+                                <span class="font-bold text-xs text-slate-100 block">💳 Tarjeta Crédito / Débito</span>
+                                <span class="text-[10px] text-slate-400 block">Webpay / Stripe</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl bg-slate-900 border border-slate-700 hover:border-emerald-500 cursor-pointer transition">
+                            <input type="radio" th:field="*{paymentMethod}" value="TRANSFERENCIA" class="text-emerald-500 focus:ring-emerald-500" />
+                            <div>
+                                <span class="font-bold text-xs text-slate-100 block">🏦 Transferencia Bancaria</span>
+                                <span class="text-[10px] text-slate-400 block">Banco Estado / Chile</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-3 p-4 rounded-2xl bg-slate-900 border border-slate-700 hover:border-emerald-500 cursor-pointer transition">
+                            <input type="radio" th:field="*{paymentMethod}" value="MERCADOPAGO" class="text-emerald-500 focus:ring-emerald-500" />
+                            <div>
+                                <span class="font-bold text-xs text-slate-100 block">📲 Mercado Pago / PayPal</span>
+                                <span class="text-[10px] text-slate-400 block">Pago Digital Rápido</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Order Summary Card (1 Col) -->
+            <div class="lg:col-span-1 bg-slate-800/60 border border-slate-700/80 rounded-3xl p-6 shadow-2xl space-y-6 backdrop-blur sticky top-24">
+                <div class="border-b border-slate-700/60 pb-4">
+                    <h3 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+                        🛍️ Resumen de la Orden
+                    </h3>
+                    <p class="text-slate-400 text-xs mt-1">Revisión de productos a facturar.</p>
+                </div>
+
+                <!-- Products Summary Table -->
+                <div class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                    <div th:each="item : ${cart.items}" class="flex items-center justify-between gap-3 text-xs p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+                        <div class="space-y-0.5 flex-1 min-w-0">
+                            <span class="font-bold text-slate-200 block truncate" th:text="${item.product.name}">Producto</span>
+                            <span class="text-slate-400 font-mono" th:text="${item.quantity + ' unids. x $' + #numbers.formatDecimal(item.product.price, 1, 'POINT', 2, 'COMMA')}">1 x $0.00</span>
+                        </div>
+                        <span class="font-mono font-bold text-emerald-400" th:text="${'$' + #numbers.formatDecimal(item.amount, 1, 'POINT', 2, 'COMMA')}">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- Issuing Company Card -->
+                <div th:if="${company != null}" class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-[11px] text-slate-400 space-y-1">
+                    <span class="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 block">Facturado Por</span>
+                    <span class="font-bold text-slate-200 block" th:text="${company.name}">TIENDA ONLINE E-COMMERCE</span>
+                    <span class="font-mono block" th:text="${'RUT: ' + company.taxId}">RUT: 76.543.210-9</span>
+                </div>
+
+                <div class="space-y-3 text-sm pt-2 border-t border-slate-700/60">
+                    <div class="flex items-center justify-between text-slate-300">
+                        <span>Subtotal Ítems:</span>
+                        <span class="font-mono font-semibold text-slate-100"
+                              th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 'POINT', 2, 'COMMA')}">
+                            $0.00
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-slate-300">
+                        <span>Costo de Despacho:</span>
+                        <span class="font-mono font-semibold text-emerald-400">¡GRATIS!</span>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-700/60 flex items-center justify-between">
+                        <span class="text-base font-bold text-slate-100">Total a Pagar:</span>
+                        <span class="text-2xl font-extrabold text-emerald-400 font-mono"
+                              th:text="${'$' + #numbers.formatDecimal(cart.total, 1, 'POINT', 2, 'COMMA')}">
+                            $0.00
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <button type="submit"
+                            class="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-base shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
+                        💳 Realizar Pago y Confirmar Orden
+                    </button>
+
+                    <a th:href="@{/cart}" class="block py-2.5 px-3 text-slate-400 hover:text-slate-200 text-xs font-semibold text-center transition">
+                        ← Volver al Carrito
+                    </a>
+                </div>
+            </div>
+
+        </form>
+
+    </main>
+
+</body>
+</html>

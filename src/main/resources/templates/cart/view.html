@@ -187,10 +187,10 @@
                 </div>
 
                 <div class="space-y-3 pt-2">
-                    <button onclick="alert('¡Excelente elección! Tu pedido ha sido procesado con éxito.')"
-                            class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
+                    <a th:href="@{/cart/checkout}"
+                       class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-sm shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer">
                         💳 Finalizar Compra
-                    </button>
+                    </a>
 
                     <div class="flex items-center gap-3">
                         <a th:href="@{/cart/clear}"

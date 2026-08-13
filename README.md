@@ -29,8 +29,10 @@ Aplicación Java monolítica construida con **Spring Boot 4.1.0**, **Spring Web 
 - **Edición de Usuarios**: Validación de contraseñas obligatoria al crear y **opcional al editar**, preservando la contraseña encriptada si el campo se deja en blanco. Preservación de roles seleccionados ante errores de formulario.
 - **Diálogos SweetAlert2**: Diálogos interactivos con diseño glassmorphism modo oscuro para confirmaciones de eliminación y alertas de protección.
 
-### 🛒 5. Catálogo Público y Carrito de Compras
-- Catálogo público accesible (`/index`) con detalle de productos, carrito de compras en sesión (`/cart`) y proceso de registro (`/register`).
+### 🛒 5. Catálogo Público, Carrito, Checkout e Historial de Compras
+- **Formulario de Checkout (`/cart/checkout`)**: Al finalizar la compra, los usuarios autenticados completan sus datos personales (Nombre, Apellido, RUT, Email, Teléfono), dirección de despacho (Dirección y Ciudad), seleccionan un método de envío (Estándar, Express o Retiro en Tienda) y método de pago (Tarjeta, Transferencia o Mercado Pago).
+- **Procesamiento de Pago y Descuento de Stock**: El botón **"Realizar Pago"** simula la transacción, genera automáticamente la orden de compra/factura en base de datos, descuenta el stock de los productos comprados y vacía el carrito de compras.
+- **Historial de Compras del Usuario (`/user/orders`)**: Disponible en el menú de navegación (**"🛍️ Mis Compras"**), donde cada usuario únicamente puede consultar su propio historial de órdenes realizadas y descargar los comprobantes en PDF.
 
 ---
 
