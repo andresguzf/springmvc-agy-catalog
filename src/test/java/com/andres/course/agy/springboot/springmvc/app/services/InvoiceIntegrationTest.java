@@ -75,6 +75,23 @@ public class InvoiceIntegrationTest {
 
     @Test
     @WithMockUser(username = "billing", roles = {"BILLING", "USER"})
+    public void validationFailurePreservesSelectedItemsInModel() throws Exception {
+        List<Product> products = productRepository.findAll();
+        Product product = products.get(0);
+
+        mockMvc.perform(post("/admin/invoices/form").with(csrf())
+                        .param("customerName", "") // Invalid: blank customer name
+                        .param("description", "")  // Invalid: blank description
+                        .param("item_id[]", String.valueOf(product.getId()))
+                        .param("quantity[]", "3"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("invoices/form"))
+                .andExpect(model().attributeExists("selectedItems"))
+                .andExpect(model().hasErrors());
+    }
+
+    @Test
+    @WithMockUser(username = "billing", roles = {"BILLING", "USER"})
     public void invoiceCreationFailsIfQuantityExceedsStock() {
         List<Product> products = productRepository.findAll();
         assertFalse(products.isEmpty());

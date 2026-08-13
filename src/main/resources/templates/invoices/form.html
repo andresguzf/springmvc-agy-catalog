@@ -104,12 +104,34 @@
                                 </tr>
                             </thead>
                             <tbody id="invoice_items_table" class="divide-y divide-slate-800/60 font-sans">
-                                <!-- Dynamic JS Rows Injected Here -->
+                                <!-- Server-side repopulated rows on form validation return -->
+                                <tr th:each="item : ${selectedItems}" th:id="${'row_' + item.product.id}" class="hover:bg-slate-900/50 transition">
+                                    <td class="py-3.5 px-6 font-bold text-slate-100">
+                                        <input type="hidden" name="item_id[]" th:value="${item.product.id}" />
+                                        <span th:text="${item.product.name}">Producto</span>
+                                    </td>
+                                    <td class="py-3.5 px-6 font-mono text-slate-300" th:text="${'$' + #numbers.formatDecimal(item.product.price, 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                                    <td class="py-3.5 px-6 text-center">
+                                        <input type="number" name="quantity[]" th:id="${'qty_' + item.product.id}" th:value="${item.quantity}" min="1" th:max="${item.product.stock}"
+                                               th:onchange="|updateItemRow(${item.product.id}, ${item.product.price}, ${item.product.stock})|"
+                                               th:oninput="|updateItemRow(${item.product.id}, ${item.product.price}, ${item.product.stock})|"
+                                               class="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-center font-mono focus:outline-none focus:border-emerald-500 text-xs font-bold" />
+                                    </td>
+                                    <td class="py-3.5 px-6 text-right font-mono font-bold text-emerald-400 text-sm" th:id="${'subtotal_' + item.product.id}"
+                                        th:text="${'$' + #numbers.formatDecimal(item.calculateImport(), 1, 'POINT', 2, 'COMMA')}">
+                                        $0.00
+                                    </td>
+                                    <td class="py-3.5 px-6 text-center">
+                                        <button type="button" th:onclick="|removeRow(${item.product.id})|" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white transition cursor-pointer text-xs font-bold">
+                                            🗑️
+                                        </button>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
                         <!-- Empty Table Notice -->
-                        <div id="empty_items_notice" class="p-8 text-center text-slate-500 text-sm font-medium">
+                        <div id="empty_items_notice" th:class="${selectedItems != null and !selectedItems.isEmpty() ? 'hidden p-8 text-center text-slate-500 text-sm font-medium' : 'p-8 text-center text-slate-500 text-sm font-medium'}">
                             No se han agregado productos a la factura. Utiliza el buscador arriba para incorporar ítems.
                         </div>
                     </div>
@@ -283,6 +305,9 @@
                         resultsBox.classList.add('hidden');
                     }
                 });
+
+                // Calculate total for any repopulated items on load
+                calculateGrandTotal();
             });
         </script>
 

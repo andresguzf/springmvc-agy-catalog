@@ -50,10 +50,14 @@ public class AdminInvoiceController {
 
     private final InvoiceService invoiceService;
     private final UserService userService;
+    private final com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository productRepository;
 
-    public AdminInvoiceController(InvoiceService invoiceService, UserService userService) {
+    public AdminInvoiceController(InvoiceService invoiceService,
+                                 UserService userService,
+                                 com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository productRepository) {
         this.invoiceService = invoiceService;
         this.userService = userService;
+        this.productRepository = productRepository;
     }
 
     @GetMapping
@@ -125,31 +129,25 @@ public class AdminInvoiceController {
         Long[] itemIds = (itemIds1 != null && itemIds1.length > 0) ? itemIds1 : itemIds2;
         Integer[] quantities = (quantities1 != null && quantities1.length > 0) ? quantities1 : quantities2;
 
-        if (itemIds == null || itemIds.length == 0 || quantities == null || quantities.length == 0) {
+        List<InvoiceItem> selectedItems = populateItems(itemIds, quantities);
+
+        if (itemIds == null || itemIds.length == 0 || selectedItems.isEmpty()) {
             model.addAttribute("error", "Error: La factura debe incluir al menos un producto.");
             model.addAttribute("title", "Emitir Nueva Factura");
+            model.addAttribute("selectedItems", selectedItems);
             return "invoices/form";
         }
 
         if (result.hasErrors()) {
             model.addAttribute("title", "Emitir Nueva Factura");
+            model.addAttribute("selectedItems", selectedItems);
             return "invoices/form";
         }
 
         User currentUser = userService.findByUsername(authentication.getName())
                 .orElseThrow(() -> new IllegalStateException("Usuario no autenticado."));
         invoice.setUser(currentUser);
-
-        for (int i = 0; i < itemIds.length; i++) {
-            Product product = new Product();
-            product.setId(itemIds[i]);
-
-            InvoiceItem item = new InvoiceItem();
-            item.setProduct(product);
-            item.setQuantity(quantities[i]);
-
-            invoice.addItem(item);
-        }
+        invoice.setItems(selectedItems);
 
         try {
             Invoice savedInvoice = invoiceService.save(invoice);
@@ -158,8 +156,27 @@ public class AdminInvoiceController {
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("title", "Emitir Nueva Factura");
+            model.addAttribute("selectedItems", selectedItems);
             return "invoices/form";
         }
+    }
+
+    private List<InvoiceItem> populateItems(Long[] itemIds, Integer[] quantities) {
+        List<InvoiceItem> items = new java.util.ArrayList<>();
+        if (itemIds != null && quantities != null && itemIds.length == quantities.length) {
+            for (int i = 0; i < itemIds.length; i++) {
+                if (itemIds[i] != null && quantities[i] != null) {
+                    Optional<Product> pOpt = productRepository.findById(itemIds[i]);
+                    if (pOpt.isPresent()) {
+                        InvoiceItem item = new InvoiceItem();
+                        item.setProduct(pOpt.get());
+                        item.setQuantity(quantities[i]);
+                        items.add(item);
+                    }
+                }
+            }
+        }
+        return items;
     }
 
     @GetMapping("/view/{id}")
