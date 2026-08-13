@@ -79,7 +79,7 @@
                         🔍 Buscar y Agregar Producto del Catálogo *
                     </label>
                     <input type="text" id="search_product" autocomplete="off"
-                           placeholder="Escribe el nombre del producto para buscar (ej. TV, Teclado)..."
+                           placeholder="Escribe el nombre del producto para buscar (ej. Laptop, Teclado)..."
                            class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition text-sm font-medium" />
                     
                     <!-- Autocomplete Dropdown Results -->
@@ -105,7 +105,11 @@
                             </thead>
                             <tbody id="invoice_items_table" class="divide-y divide-slate-800/60 font-sans">
                                 <!-- Server-side repopulated rows on form validation return -->
-                                <tr th:each="item : ${selectedItems}" th:id="${'row_' + item.product.id}" class="hover:bg-slate-900/50 transition">
+                                <tr th:each="item : ${selectedItems}"
+                                    th:id="${'row_' + item.product.id}"
+                                    th:data-price="${item.product.price}"
+                                    th:data-subtotal="${item.calculateImport()}"
+                                    class="hover:bg-slate-900/50 transition">
                                     <td class="py-3.5 px-6 font-bold text-slate-100">
                                         <input type="hidden" name="item_id[]" th:value="${item.product.id}" />
                                         <span th:text="${item.product.name}">Producto</span>
@@ -118,7 +122,7 @@
                                                class="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-center font-mono focus:outline-none focus:border-emerald-500 text-xs font-bold" />
                                     </td>
                                     <td class="py-3.5 px-6 text-right font-mono font-bold text-emerald-400 text-sm" th:id="${'subtotal_' + item.product.id}"
-                                        th:text="${'$' + #numbers.formatDecimal(item.calculateImport(), 1, 'POINT', 2, 'NONE')}">
+                                        th:text="${'$' + #numbers.formatDecimal(item.calculateImport(), 1, 'POINT', 2, 'COMMA')}">
                                         $0.00
                                     </td>
                                     <td class="py-3.5 px-6 text-center">
@@ -158,7 +162,7 @@
 
         </div>
 
-        <!-- Autocomplete and Dynamic Items JS Script (Moved inside <main> so Thymeleaf includes it) -->
+        <!-- Autocomplete and Dynamic Items JS Script -->
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const searchInput = document.getElementById('search_product');
@@ -168,6 +172,13 @@
                 const grandTotalElem = document.getElementById('grand_total');
 
                 if (!searchInput) return;
+
+                function formatCurrency(amount) {
+                    return Number(amount).toLocaleString('es-CL', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
 
                 searchInput.addEventListener('input', function() {
                     const term = this.value.trim();
@@ -192,7 +203,7 @@
                                             <span class="font-bold text-sm text-slate-100 block">${p.name}</span>
                                             <span class="text-xs text-slate-400 font-mono">Stock Disponible: ${p.stock} unids.</span>
                                         </div>
-                                        <span class="font-mono font-bold text-emerald-400 text-sm">$${p.price.toFixed(2)}</span>
+                                        <span class="font-mono font-bold text-emerald-400 text-sm">$${formatCurrency(p.price)}</span>
                                     `;
                                     itemDiv.onclick = function() {
                                         addProductToInvoice(p);
@@ -204,9 +215,7 @@
                             }
                             resultsBox.classList.remove('hidden');
                         })
-                        .catch(err => {
-                            console.error('Error cargando productos:', err);
-                        });
+                        .catch(err => console.error('Error cargando productos:', err));
                 });
 
                 window.addProductToInvoice = function(product) {
@@ -228,15 +237,18 @@
 
                     if (emptyNotice) emptyNotice.classList.add('hidden');
 
+                    const subtotal = product.price * 1;
                     const tr = document.createElement('tr');
                     tr.id = 'row_' + product.id;
+                    tr.setAttribute('data-price', product.price);
+                    tr.setAttribute('data-subtotal', subtotal.toFixed(2));
                     tr.className = 'hover:bg-slate-900/50 transition';
                     tr.innerHTML = `
                         <td class="py-3.5 px-6 font-bold text-slate-100">
                             <input type="hidden" name="item_id[]" value="${product.id}" />
                             ${product.name}
                         </td>
-                        <td class="py-3.5 px-6 font-mono text-slate-300">$${product.price.toFixed(2)}</td>
+                        <td class="py-3.5 px-6 font-mono text-slate-300">$${formatCurrency(product.price)}</td>
                         <td class="py-3.5 px-6 text-center">
                             <input type="number" name="quantity[]" id="qty_${product.id}" value="1" min="1" max="${product.stock}"
                                    onchange="updateItemRow(${product.id}, ${product.price}, ${product.stock})"
@@ -244,7 +256,7 @@
                                    class="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-center font-mono focus:outline-none focus:border-emerald-500 text-xs font-bold" />
                         </td>
                         <td class="py-3.5 px-6 text-right font-mono font-bold text-emerald-400 text-sm" id="subtotal_${product.id}">
-                            $${product.price.toFixed(2)}
+                            $${formatCurrency(subtotal)}
                         </td>
                         <td class="py-3.5 px-6 text-center">
                             <button type="button" onclick="removeRow(${product.id})" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-600 text-rose-400 hover:text-white transition cursor-pointer text-xs font-bold">
@@ -258,6 +270,7 @@
                 };
 
                 window.updateItemRow = function(productId, price, stock) {
+                    const row = document.getElementById('row_' + productId);
                     const qtyInput = document.getElementById('qty_' + productId);
                     let qty = parseInt(qtyInput.value) || 1;
                     if (qty > stock) {
@@ -275,7 +288,13 @@
                     }
 
                     const subtotal = price * qty;
-                    document.getElementById('subtotal_' + productId).textContent = '$' + subtotal.toFixed(2);
+                    if (row) {
+                        row.setAttribute('data-subtotal', subtotal.toFixed(2));
+                    }
+                    const subtotalTd = document.getElementById('subtotal_' + productId);
+                    if (subtotalTd) {
+                        subtotalTd.textContent = '$' + formatCurrency(subtotal);
+                    }
                     calculateGrandTotal();
                 };
 
@@ -284,7 +303,7 @@
                     if (row) {
                         row.remove();
                     }
-                    if (itemsTable.children.length === 0 && emptyNotice) {
+                    if (itemsTable.querySelectorAll('tr[data-subtotal]').length === 0 && emptyNotice) {
                         emptyNotice.classList.remove('hidden');
                     }
                     calculateGrandTotal();
@@ -292,18 +311,15 @@
 
                 window.calculateGrandTotal = function() {
                     let total = 0;
-                    const rows = itemsTable.querySelectorAll('tr');
+                    const rows = itemsTable.querySelectorAll('tr[data-subtotal]');
                     rows.forEach(r => {
-                        const subtotalTd = r.querySelector('[id^="subtotal_"]');
-                        if (subtotalTd) {
-                            const rawText = subtotalTd.textContent.replace(/[^0-9.-]/g, '');
-                            const val = parseFloat(rawText);
-                            if (!isNaN(val)) {
-                                total += val;
-                            }
+                        const rawVal = r.getAttribute('data-subtotal');
+                        const val = parseFloat(rawVal);
+                        if (!isNaN(val)) {
+                            total += val;
                         }
                     });
-                    grandTotalElem.textContent = '$' + total.toFixed(2);
+                    grandTotalElem.textContent = '$' + formatCurrency(total);
                 };
 
                 document.addEventListener('click', function(e) {
