@@ -118,7 +118,7 @@
                                                class="w-20 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-center font-mono focus:outline-none focus:border-emerald-500 text-xs font-bold" />
                                     </td>
                                     <td class="py-3.5 px-6 text-right font-mono font-bold text-emerald-400 text-sm" th:id="${'subtotal_' + item.product.id}"
-                                        th:text="${'$' + #numbers.formatDecimal(item.calculateImport(), 1, 'POINT', 2, 'COMMA')}">
+                                        th:text="${'$' + #numbers.formatDecimal(item.calculateImport(), 1, 'POINT', 2, 'NONE')}">
                                         $0.00
                                     </td>
                                     <td class="py-3.5 px-6 text-center">
@@ -294,8 +294,14 @@
                     let total = 0;
                     const rows = itemsTable.querySelectorAll('tr');
                     rows.forEach(r => {
-                        const subtotalText = r.querySelector('[id^="subtotal_"]').textContent.replace('$', '');
-                        total += parseFloat(subtotalText) || 0;
+                        const subtotalTd = r.querySelector('[id^="subtotal_"]');
+                        if (subtotalTd) {
+                            const rawText = subtotalTd.textContent.replace(/[^0-9.-]/g, '');
+                            const val = parseFloat(rawText);
+                            if (!isNaN(val)) {
+                                total += val;
+                            }
+                        }
                     });
                     grandTotalElem.textContent = '$' + total.toFixed(2);
                 };
