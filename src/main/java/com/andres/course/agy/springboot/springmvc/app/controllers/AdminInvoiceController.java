@@ -71,10 +71,10 @@ public class AdminInvoiceController {
         User currentUser = userService.findByUsername(authentication.getName())
                 .orElseThrow(() -> new IllegalStateException("Usuario no autenticado."));
 
-        boolean isAdmin = currentUser.getRoles().stream().anyMatch(r -> "ROLE_ADMIN".equals(r.getName()));
+        boolean isStaff = currentUser.getRoles().stream().anyMatch(r -> "ROLE_ADMIN".equals(r.getName()) || "ROLE_BILLING".equals(r.getName()));
 
         Pageable pageable = PageRequest.of(page, 8, Sort.by("id").descending());
-        Page<Invoice> invoicesPage = isAdmin ? 
+        Page<Invoice> invoicesPage = isStaff ? 
                 invoiceService.findAll(pageable) : 
                 invoiceService.findByUser(currentUser, pageable);
 
@@ -83,7 +83,7 @@ public class AdminInvoiceController {
         model.addAttribute("title", "Gestión de Facturas");
         model.addAttribute("invoices", invoicesPage.getContent());
         model.addAttribute("page", pageRender);
-        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("isAdmin", isStaff);
 
         return "invoices/list";
     }
@@ -202,10 +202,10 @@ public class AdminInvoiceController {
 
         Invoice invoice = invoiceOpt.get();
         User currentUser = userService.findByUsername(authentication.getName()).orElse(null);
-        boolean isAdmin = currentUser != null && currentUser.getRoles().stream().anyMatch(r -> "ROLE_ADMIN".equals(r.getName()));
+        boolean isStaff = currentUser != null && currentUser.getRoles().stream().anyMatch(r -> "ROLE_ADMIN".equals(r.getName()) || "ROLE_BILLING".equals(r.getName()));
 
-        // Security check: Only Admin or Owner can view invoice
-        if (!isAdmin && (currentUser == null || invoice.getUser() == null || !invoice.getUser().getId().equals(currentUser.getId()))) {
+        // Security check: Only Staff (ADMIN/BILLING) or Owner can view invoice
+        if (!isStaff && (currentUser == null || invoice.getUser() == null || !invoice.getUser().getId().equals(currentUser.getId()))) {
             flash.addFlashAttribute("error", "Acceso denegado: No tienes permisos para consultar esta factura.");
             return "redirect:/admin/invoices";
         }

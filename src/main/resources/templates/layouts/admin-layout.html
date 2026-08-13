@@ -100,8 +100,8 @@
                         <span class="sidebar-text">Mis Compras</span>
                     </a>
 
-                    <!-- Checkout / Finalizar Compra Link -->
-                    <a sec:authorize="isAuthenticated()"
+                    <!-- Checkout / Finalizar Compra Link (Only for regular USER role) -->
+                    <a sec:authorize="!hasRole('ADMIN') and !hasRole('BILLING')"
                        th:href="@{/cart/checkout}"
                        th:class="${activeSection == 'checkout' ? 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-sm transition shadow-sm' : 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 font-medium text-sm transition'}">
                         <span class="text-lg flex-shrink-0">🛒</span>
@@ -193,7 +193,8 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a th:href="@{/cart/checkout}" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5 shadow-md">
+                    <a sec:authorize="!hasRole('ADMIN') and !hasRole('BILLING')"
+                       th:href="@{/cart/checkout}" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5 shadow-md">
                         🛒 Finalizar Compra
                         <span th:if="${@cart.totalQuantity gt 0}"
                               th:text="${@cart.totalQuantity}"

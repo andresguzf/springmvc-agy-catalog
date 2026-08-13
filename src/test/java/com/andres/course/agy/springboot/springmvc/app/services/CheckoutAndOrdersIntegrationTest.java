@@ -1,7 +1,10 @@
 package com.andres.course.agy.springboot.springmvc.app.services;
 
+import com.andres.course.agy.springboot.springmvc.app.models.Invoice;
 import com.andres.course.agy.springboot.springmvc.app.models.Product;
+import com.andres.course.agy.springboot.springmvc.app.models.User;
 import com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository;
+import com.andres.course.agy.springboot.springmvc.app.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,12 @@ public class CheckoutAndOrdersIntegrationTest {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private InvoiceService invoiceService;
+
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders
@@ -54,11 +63,9 @@ public class CheckoutAndOrdersIntegrationTest {
 
         MockHttpSession session = new MockHttpSession();
 
-        // Perform add to cart via MockMvc session
         mockMvc.perform(post("/cart/add/" + product.getId()).session(session).with(csrf()))
                 .andExpect(status().is3xxRedirection());
 
-        // Perform checkout using same session
         mockMvc.perform(post("/cart/checkout").session(session).with(csrf())
                         .param("firstName", "Carlos")
                         .param("lastName", "González")
@@ -81,6 +88,15 @@ public class CheckoutAndOrdersIntegrationTest {
         mockMvc.perform(get("/user/orders"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/orders/list"))
+                .andExpect(model().attributeExists("invoices"));
+    }
+
+    @Test
+    @WithMockUser(username = "billing", roles = {"BILLING"})
+    public void billingUserCanViewAndEmitAllOrders() throws Exception {
+        mockMvc.perform(get("/admin/invoices"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("invoices/list"))
                 .andExpect(model().attributeExists("invoices"));
     }
 }

@@ -94,13 +94,13 @@
                                 <div class="flex items-center justify-center gap-2">
                                     <a th:href="@{/admin/invoices/view/{id}(id=${invoice.id})}"
                                        class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 font-bold text-xs transition">
-                                        👁️ Ver
+                                        👁️ Revisar Orden
                                     </a>
 
                                     <a th:href="@{/admin/invoices/view/{id}(id=${invoice.id}, format='pdf')}"
                                        class="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-600 hover:text-white font-bold text-xs transition"
-                                       title="Descargar versión en PDF">
-                                        📄 PDF
+                                       title="Emitir y descargar Factura en PDF">
+                                        🧾 Emitir Factura PDF
                                     </a>
 
                                     <button th:if="${isAdmin}"
