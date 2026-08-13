@@ -139,12 +139,20 @@
                         <span class="sidebar-text">Datos de Empresa</span>
                     </a>
 
+                    <!-- Orders Link (Admin & Billing) -->
+                    <a sec:authorize="hasAnyRole('ADMIN', 'BILLING')"
+                       th:href="@{/admin/orders}"
+                       th:class="${activeSection == 'orders' ? 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-amber-500/20 to-orange-500/10 border border-amber-500/30 text-amber-300 font-bold text-sm transition shadow-sm' : 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 font-medium text-sm transition'}">
+                        <span class="text-lg flex-shrink-0">🛒</span>
+                        <span class="sidebar-text">Órdenes de Compra</span>
+                    </a>
+
                     <!-- Invoices Link (Admin & Billing) -->
                     <a sec:authorize="hasAnyRole('ADMIN', 'BILLING')"
                        th:href="@{/admin/invoices}"
                        th:class="${activeSection == 'invoices' ? 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-teal-500/20 to-cyan-500/10 border border-teal-500/30 text-teal-300 font-bold text-sm transition shadow-sm' : 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 font-medium text-sm transition'}">
                         <span class="text-lg flex-shrink-0">🧾</span>
-                        <span class="sidebar-text">Facturación</span>
+                        <span class="sidebar-text">Facturas Emitidas</span>
                     </a>
                 </nav>
 

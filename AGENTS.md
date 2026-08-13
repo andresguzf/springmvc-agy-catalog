@@ -66,20 +66,14 @@ src/main/java/com/andres/course/agy/springboot/springmvc/app/
 3. **Gestión de Contraseña en Edición de Usuarios:**
    - La contraseña es obligatoria al crear un nuevo usuario (`isNew == true`), pero opcional al editar (`isNew == false`). Si el campo queda en blanco al editar, se preserva el hash BCrypt existente.
 
-4. **Flujo de Checkout y Registro de Órdenes de Compra (`/cart/checkout`):**
-   - **Formulario de Comprador**: Captura Nombre, Apellido, RUT, Email, Teléfono, Dirección, Ciudad, Método de Despacho (Estándar, Express, Retiro) y Método de Pago ficticio (Tarjeta, Transferencia, Mercado Pago).
-   - **Generación de Orden en Estado Inicial (`EN_PROCESO`)**: El proceso genera un registro de orden de compra (`Invoice`) con estado inicial `EN_PROCESO`, descuenta el stock de productos, vacía el carrito de sesión y redirige al comprobante del usuario.
+4. **Separación de Dominio entre Órdenes de Compra (`Order`) y Facturas (`Invoice`):**
+   - **Órdenes de Compra Web (`Order` @ `/admin/orders`)**: Registra las órdenes generadas por los clientes desde el checkout (`/cart/checkout`) en estado inicial `EN_PROCESO`. Permite revisión detallada por `ROLE_ADMIN` y `ROLE_BILLING`.
+   - **Conversión de Orden a Factura (`GET /admin/orders/emit/{id}`)**: Transforma la orden seleccionada en un registro de Factura Oficial (`Invoice`), actualiza el estado de la orden a `FACTURADO` y la vincula con la factura generada.
+   - **Facturación Manual e Independiente (`Invoice` @ `/admin/invoices`)**: Permite a `ROLE_ADMIN` y `ROLE_BILLING` la emisión directa de facturas manuales (sin orden previa) mediante `/admin/invoices/form`, así como la consulta de todas las facturas oficiales emitidas.
 
-5. **Gestión de Órdenes y Emisión de Facturas (`ROLE_ADMIN` / `ROLE_BILLING`):**
-   - Los usuarios con `ROLE_ADMIN` y `ROLE_BILLING` visualizan **todas** las órdenes generadas por los clientes en el sistema (`/admin/invoices`).
-   - Endpoint de emisión `GET /admin/invoices/emit/{id}`: Cambia el estado de la orden de `EN_PROCESO` a `FACTURADO`.
-
-6. **Historial de Compras de Usuarios (`/user/orders`):**
-   - Cualquier usuario autenticado puede consultar su propio historial de órdenes en `/user/orders` o mediante **"🛍️ Mis Compras"**.
-   - **Ciclo del PDF**: Si la orden se encuentra `EN_PROCESO`, muestra badge informativo. Una vez emitida y cambiada a `FACTURADO` por el área administrativa, se habilita la descarga de la factura oficial en PDF (`GET /user/orders/view/{id}?format=pdf`).
-
-5. **Exportación a PDF:**
-   - Endpoint `GET /admin/invoices/view/{id}?format=pdf` genera y descarga un comprobante PDF oficial utilizando OpenPDF.
+5. **Historial de Compras de Usuarios (`/user/orders`):**
+   - Cada cliente únicamente puede consultar sus propias órdenes de compra en `/user/orders` (**"🛍️ Mis Compras"**).
+   - **Descarga de PDF Condicionada**: Si la orden está en estado `EN_PROCESO`, muestra badge `⏳ Pendiente Factura`. Una vez que la administración convierte la orden en factura (`FACTURADO`), se habilita el botón `📄 Factura PDF` para descargar el comprobante oficial.
 
 ---
 

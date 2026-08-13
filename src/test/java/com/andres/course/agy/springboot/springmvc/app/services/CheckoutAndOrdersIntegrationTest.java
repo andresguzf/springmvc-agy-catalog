@@ -1,10 +1,8 @@
 package com.andres.course.agy.springboot.springmvc.app.services;
 
-import com.andres.course.agy.springboot.springmvc.app.models.Invoice;
+import com.andres.course.agy.springboot.springmvc.app.models.Order;
 import com.andres.course.agy.springboot.springmvc.app.models.Product;
-import com.andres.course.agy.springboot.springmvc.app.models.User;
 import com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository;
-import com.andres.course.agy.springboot.springmvc.app.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -36,10 +34,7 @@ public class CheckoutAndOrdersIntegrationTest {
     private ProductRepository productRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private InvoiceService invoiceService;
+    private OrderService orderService;
 
     @BeforeEach
     public void setup() {
@@ -88,15 +83,15 @@ public class CheckoutAndOrdersIntegrationTest {
         mockMvc.perform(get("/user/orders"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("user/orders/list"))
-                .andExpect(model().attributeExists("invoices"));
+                .andExpect(model().attributeExists("orders"));
     }
 
     @Test
     @WithMockUser(username = "billing", roles = {"BILLING"})
-    public void billingUserCanViewAndEmitAllOrders() throws Exception {
-        mockMvc.perform(get("/admin/invoices"))
+    public void billingUserCanViewAllOrders() throws Exception {
+        mockMvc.perform(get("/admin/orders"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("invoices/list"))
-                .andExpect(model().attributeExists("invoices"));
+                .andExpect(view().name("admin/orders/list"))
+                .andExpect(model().attributeExists("orders"));
     }
 }

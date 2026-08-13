@@ -29,10 +29,11 @@ Aplicación Java monolítica construida con **Spring Boot 4.1.0**, **Spring Web 
 - **Edición de Usuarios**: Validación de contraseñas obligatoria al crear y **opcional al editar**, preservando la contraseña encriptada si el campo se deja en blanco. Preservación de roles seleccionados ante errores de formulario.
 - **Diálogos SweetAlert2**: Diálogos interactivos con diseño glassmorphism modo oscuro para confirmaciones de eliminación y alertas de protección.
 
-### 🛒 5. Catálogo Público, Carrito, Checkout e Historial de Compras
-- **Formulario de Checkout (`/cart/checkout`)**: Al finalizar la compra, los usuarios autenticados completan sus datos de comprador y despacho, generando una orden en estado inicial `EN_PROCESO`.
-- **Gestión y Emisión de Facturas (`ROLE_ADMIN` y `ROLE_BILLING`)**: El equipo administrativo revisa las órdenes recibidas en `/admin/invoices` y ejecuta la acción **"⚡ Emitir Factura"**, cambiando el estado de la orden a `FACTURADO`.
-- **Historial de Compras y Descarga de Factura PDF (`/user/orders`)**: Los clientes visualizan el estado en tiempo real de sus órdenes (`EN_PROCESO` / `FACTURADO`). Una vez que la factura ha sido emitida por administración, se habilita automáticamente el botón **"📄 Factura PDF"** para su descarga oficial.
+### 🛒 5. Módulos Independientes: Órdenes de Compra (`Order`) y Facturación (`Invoice`)
+- **Gestión de Órdenes de Compra Web (`/admin/orders`)**: Accesible para `ROLE_ADMIN` y `ROLE_BILLING`. Muestra todas las órdenes generadas por los usuarios desde el checkout e-commerce (`EN_PROCESO` o `FACTURADO`), permitiendo su revisión completa y posterior conversión.
+- **Conversión de Orden a Factura (`/admin/orders/emit/{id}`)**: El área de facturación o administración revisa la orden recibida y ejecuta la acción **"⚡ Convertir a Factura"**, generando automáticamente el registro de la factura oficial asociada.
+- **Facturación Manual e Independiente (`/admin/invoices`)**: Permite consultar todas las facturas oficialmente emitidas en el sistema y crear nuevas facturas manuales directamente (`/admin/invoices/form`) sin requerir una orden de compra e-commerce previa.
+- **Historial del Cliente (`/user/orders`)**: Los clientes visualizan el estado de sus órdenes de compra (**"🛍️ Mis Compras"**). Una vez que la administración convierte su orden a factura, el cliente puede descargar directamente la factura oficial en PDF.
 
 ---
 

@@ -9,6 +9,7 @@ import com.andres.course.agy.springboot.springmvc.app.models.User;
 import com.andres.course.agy.springboot.springmvc.app.services.CartService;
 import com.andres.course.agy.springboot.springmvc.app.services.CompanyService;
 import com.andres.course.agy.springboot.springmvc.app.services.InvoiceService;
+import com.andres.course.agy.springboot.springmvc.app.services.OrderService;
 import com.andres.course.agy.springboot.springmvc.app.services.ProductService;
 import com.andres.course.agy.springboot.springmvc.app.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,18 +36,18 @@ public class CartController {
     private final CartService cartService;
     private final ProductService productService;
     private final UserService userService;
-    private final InvoiceService invoiceService;
+    private final OrderService orderService;
     private final CompanyService companyService;
 
     public CartController(CartService cartService,
                           ProductService productService,
                           UserService userService,
-                          InvoiceService invoiceService,
+                          OrderService orderService,
                           CompanyService companyService) {
         this.cartService = cartService;
         this.productService = productService;
         this.userService = userService;
-        this.invoiceService = invoiceService;
+        this.orderService = orderService;
         this.companyService = companyService;
     }
 
@@ -152,32 +153,32 @@ public class CartController {
         User currentUser = userService.findByUsername(authentication.getName())
                 .orElseThrow(() -> new IllegalStateException("Usuario no encontrado"));
 
-        Invoice invoice = new Invoice();
-        invoice.setCustomerName(checkoutForm.getFirstName() + " " + checkoutForm.getLastName());
-        invoice.setTaxId(checkoutForm.getRut());
-        
-        String shippingLabel = getShippingLabel(checkoutForm.getShippingMethod());
-        String paymentLabel = getPaymentLabel(checkoutForm.getPaymentMethod());
-        
-        invoice.setDescription("Orden de Compra Web | " + shippingLabel + " | " + paymentLabel);
-        invoice.setObservation("Envío: " + checkoutForm.getAddress() + ", " + checkoutForm.getCity() + 
-                               " | Tel: " + checkoutForm.getPhone() + " | Email: " + checkoutForm.getEmail());
-        invoice.setUser(currentUser);
+        com.andres.course.agy.springboot.springmvc.app.models.Order order = new com.andres.course.agy.springboot.springmvc.app.models.Order();
+        order.setCustomerName(checkoutForm.getFirstName() + " " + checkoutForm.getLastName());
+        order.setTaxId(checkoutForm.getRut());
+        order.setEmail(checkoutForm.getEmail());
+        order.setPhone(checkoutForm.getPhone());
+        order.setAddress(checkoutForm.getAddress());
+        order.setCity(checkoutForm.getCity());
+        order.setShippingMethod(getShippingLabel(checkoutForm.getShippingMethod()));
+        order.setPaymentMethod(getPaymentLabel(checkoutForm.getPaymentMethod()));
+        order.setStatus("EN_PROCESO");
+        order.setUser(currentUser);
 
-        List<InvoiceItem> items = new ArrayList<>();
+        List<com.andres.course.agy.springboot.springmvc.app.models.OrderItem> items = new ArrayList<>();
         for (CartItem cartItem : cart.getItems()) {
-            InvoiceItem item = new InvoiceItem();
+            com.andres.course.agy.springboot.springmvc.app.models.OrderItem item = new com.andres.course.agy.springboot.springmvc.app.models.OrderItem();
             item.setProduct(cartItem.getProduct());
             item.setQuantity(cartItem.getQuantity());
             items.add(item);
         }
-        invoice.setItems(items);
+        order.setItems(items);
 
         try {
-            Invoice savedInvoice = invoiceService.save(invoice);
+            com.andres.course.agy.springboot.springmvc.app.models.Order savedOrder = orderService.save(order);
             cartService.clearCart();
-            flash.addFlashAttribute("success", "¡Pago realizado con éxito! Tu orden de compra N° " + savedInvoice.getId() + " ha sido procesada.");
-            return "redirect:/user/orders/view/" + savedInvoice.getId();
+            flash.addFlashAttribute("success", "¡Pago realizado con éxito! Tu orden de compra N° " + savedOrder.getId() + " ha sido registrada.");
+            return "redirect:/user/orders/view/" + savedOrder.getId();
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("title", "Finalizar Compra - Checkout");

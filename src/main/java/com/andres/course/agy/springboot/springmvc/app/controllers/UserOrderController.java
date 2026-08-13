@@ -37,12 +37,12 @@ import java.util.Optional;
 @RequestMapping("/user/orders")
 public class UserOrderController {
 
-    private final InvoiceService invoiceService;
+    private final com.andres.course.agy.springboot.springmvc.app.services.OrderService orderService;
     private final UserService userService;
     private final CompanyService companyService;
 
-    public UserOrderController(InvoiceService invoiceService, UserService userService, CompanyService companyService) {
-        this.invoiceService = invoiceService;
+    public UserOrderController(com.andres.course.agy.springboot.springmvc.app.services.OrderService orderService, UserService userService, CompanyService companyService) {
+        this.orderService = orderService;
         this.userService = userService;
         this.companyService = companyService;
     }
@@ -60,11 +60,11 @@ public class UserOrderController {
                 .orElseThrow(() -> new IllegalStateException("Usuario no encontrado."));
 
         Pageable pageable = PageRequest.of(page, 8, Sort.by("id").descending());
-        Page<Invoice> invoicesPage = invoiceService.findByUser(currentUser, pageable);
-        PageRender<Invoice> pageRender = new PageRender<>("/user/orders", invoicesPage);
+        Page<com.andres.course.agy.springboot.springmvc.app.models.Order> ordersPage = orderService.findByUser(currentUser, pageable);
+        PageRender<com.andres.course.agy.springboot.springmvc.app.models.Order> pageRender = new PageRender<>("/user/orders", ordersPage);
 
         model.addAttribute("title", "Mis Compras e Historial de Órdenes");
-        model.addAttribute("invoices", invoicesPage.getContent());
+        model.addAttribute("orders", ordersPage.getContent());
         model.addAttribute("page", pageRender);
 
         return "user/orders/list";
@@ -82,18 +82,18 @@ public class UserOrderController {
             return "redirect:/login";
         }
 
-        Optional<Invoice> invoiceOpt = invoiceService.findInvoiceWithDetails(id);
-        if (invoiceOpt.isEmpty()) {
+        Optional<com.andres.course.agy.springboot.springmvc.app.models.Order> orderOpt = orderService.findOrderWithDetails(id);
+        if (orderOpt.isEmpty()) {
             flash.addFlashAttribute("error", "La orden de compra no existe.");
             return "redirect:/user/orders";
         }
 
-        Invoice invoice = invoiceOpt.get();
+        com.andres.course.agy.springboot.springmvc.app.models.Order order = orderOpt.get();
         User currentUser = userService.findByUsername(authentication.getName()).orElse(null);
         boolean isAdmin = currentUser != null && currentUser.getRoles().stream().anyMatch(r -> "ROLE_ADMIN".equals(r.getName()));
 
         // Security check: Only Admin or the Order Owner can view this order
-        if (!isAdmin && (currentUser == null || invoice.getUser() == null || !invoice.getUser().getId().equals(currentUser.getId()))) {
+        if (!isAdmin && (currentUser == null || order.getUser() == null || !order.getUser().getId().equals(currentUser.getId()))) {
             flash.addFlashAttribute("error", "Acceso denegado: No tienes permisos para ver esta orden de compra.");
             return "redirect:/user/orders";
         }
@@ -101,12 +101,17 @@ public class UserOrderController {
         Company company = companyService.getCompany();
 
         if ("pdf".equalsIgnoreCase(format)) {
-            generateInvoicePdf(invoice, company, response);
-            return null;
+            if (order.getInvoice() != null) {
+                generateInvoicePdf(order.getInvoice(), company, response);
+                return null;
+            } else {
+                flash.addFlashAttribute("error", "La factura oficial para la orden N° " + order.getId() + " aún se encuentra en proceso y no ha sido emitida por administración.");
+                return "redirect:/user/orders/view/" + id;
+            }
         }
 
-        model.addAttribute("title", "Detalle de Orden de Compra N° " + invoice.getId());
-        model.addAttribute("invoice", invoice);
+        model.addAttribute("title", "Detalle de Orden de Compra N° " + order.getId());
+        model.addAttribute("order", order);
         model.addAttribute("company", company);
 
         return "user/orders/view";

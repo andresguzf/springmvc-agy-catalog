@@ -1,0 +1,123 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layouts/admin-layout :: adminLayout(${title}, 'orders', ~{::main})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Revisión de Orden de Compra</title>
+</head>
+<body>
+    <main class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- Header Actions Bar -->
+        <div class="flex items-center justify-between gap-4">
+            <a th:href="@{/admin/orders}"
+               class="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-xs transition flex items-center gap-2">
+                ← Volver a Órdenes de Compra
+            </a>
+
+            <div class="flex items-center gap-3">
+                <a th:unless="${order.status == 'FACTURADO'}"
+                   th:href="@{/admin/orders/emit/{id}(id=${order.id})}"
+                   class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+                    ⚡ Convertir y Emitir Factura Oficial
+                </a>
+
+                <a th:if="${order.status == 'FACTURADO' and order.invoice != null}"
+                   th:href="@{/admin/invoices/view/{id}(id=${order.invoice.id})}"
+                   class="px-5 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500 hover:text-slate-950 font-bold text-xs transition flex items-center gap-2">
+                    🧾 Ver Factura Emitida N° <span th:text="${order.invoice.id}">1</span>
+                </a>
+
+                <button type="button" onclick="window.print()"
+                        class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition flex items-center gap-2 cursor-pointer">
+                    🖨️ Imprimir
+                </button>
+            </div>
+        </div>
+
+        <!-- Printable Order Container -->
+        <div id="orderPrintArea" class="bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl space-y-8 backdrop-blur">
+            
+            <!-- Letterhead Header -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-8 border-b border-slate-800">
+                <div class="space-y-2">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center font-black text-slate-950 text-2xl shadow-lg">
+                            🛒
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-100" th:text="${company != null ? company.name : 'TIENDA ONLINE E-COMMERCE'}">TIENDA ONLINE E-COMMERCE</h2>
+                            <p class="text-xs text-slate-400 font-mono" th:text="${'RUT Empresa: ' + (company != null ? company.taxId : '76.543.210-9')}">RUT Empresa: 76.543.210-9</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Status Box -->
+                <div class="p-5 rounded-2xl bg-slate-950 border border-slate-800 text-right space-y-1 min-w-[220px]">
+                    <span th:if="${order.status == 'FACTURADO'}" class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 block font-mono">✅ FACTURADO</span>
+                    <span th:unless="${order.status == 'FACTURADO'}" class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block font-mono">⏳ ORDEN DE COMPRA WEB</span>
+                    <span class="text-2xl font-black text-slate-100 font-mono block" th:text="${'N° ' + #numbers.formatInteger(order.id, 6)}">N° 000001</span>
+                    <span class="text-xs text-slate-400 font-mono block" th:text="${'Fecha: ' + (order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A')}">Fecha: 12/08/2026</span>
+                </div>
+            </div>
+
+            <!-- Customer & Shipping Info Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl bg-slate-950/80 border border-slate-800/80 text-xs">
+                <div class="space-y-2">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">Datos del Comprador</span>
+                    <div class="space-y-1">
+                        <p class="text-slate-100 font-bold text-sm" th:text="${order.customerName}">Nombre Cliente</p>
+                        <p class="text-slate-400 font-mono" th:text="${'RUT / ID: ' + (order.taxId != null ? order.taxId : 'N/A')}">RUT: 12.345.678-9</p>
+                        <p class="text-slate-400 font-mono" th:text="${'Email: ' + (order.email != null ? order.email : 'N/A')}">Email</p>
+                        <p class="text-slate-400 font-mono" th:text="${'Teléfono: ' + (order.phone != null ? order.phone : 'N/A')}">Teléfono</p>
+                    </div>
+                </div>
+
+                <div class="space-y-2 md:text-right">
+                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">Datos de Despacho y Pago</span>
+                    <div class="space-y-1">
+                        <p class="text-slate-200 font-semibold" th:text="${'Método de Envío: ' + order.shippingMethod}">Envío Estándar</p>
+                        <p class="text-slate-200 font-semibold" th:text="${'Método de Pago: ' + order.paymentMethod}">Tarjeta Webpay</p>
+                        <p class="text-slate-400 font-mono" th:text="${'Dirección: ' + order.address + ', ' + order.city}">Dirección</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">Productos Seleccionados</h3>
+
+                <div class="rounded-2xl border border-slate-800 overflow-hidden bg-slate-950/50">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950 font-mono text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                            <tr>
+                                <th scope="col" class="py-3.5 px-6">Producto</th>
+                                <th scope="col" class="py-3.5 px-6 text-right">Precio Unit.</th>
+                                <th scope="col" class="py-3.5 px-6 text-center">Cantidad</th>
+                                <th scope="col" class="py-3.5 px-6 text-right">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-sans">
+                            <tr th:each="item : ${order.items}" class="hover:bg-slate-900/40">
+                                <td class="py-4 px-6 font-bold text-slate-100" th:text="${item.product != null ? item.product.name : 'Producto'}">Producto</td>
+                                <td class="py-4 px-6 text-right font-mono text-slate-300" th:text="${'$' + #numbers.formatDecimal(item.product.price, 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                                <td class="py-4 px-6 text-center font-mono font-bold text-emerald-400" th:text="${item.quantity}">1</td>
+                                <td class="py-4 px-6 text-right font-mono font-bold text-slate-100" th:text="${'$' + #numbers.formatDecimal(item.calculateImport(), 1, 'POINT', 2, 'COMMA')}">$0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Grand Total Box -->
+                <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+                    <span class="text-xs font-bold uppercase text-slate-400 font-mono">Monto Total de la Orden:</span>
+                    <span class="text-2xl font-black text-amber-400 font-mono"
+                          th:text="${'$' + #numbers.formatDecimal(order.total, 1, 'POINT', 2, 'COMMA')}">
+                        $0.00
+                    </span>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
