@@ -91,10 +91,16 @@ public class AdminInvoiceController {
         return "invoices/form";
     }
 
-    @GetMapping(value = "/load-products/{term}", produces = "application/json")
+    @GetMapping(value = {"/load-products/{term}", "/load-products"}, produces = "application/json")
     @ResponseBody
-    public List<Map<String, Object>> loadProducts(@PathVariable String term) {
-        List<Product> products = invoiceService.findProductByName(term);
+    public List<Map<String, Object>> loadProducts(@PathVariable(required = false) String term,
+                                                  @RequestParam(name = "term", required = false) String queryTerm) {
+        String searchTerm = (term != null && !term.isBlank()) ? term : queryTerm;
+        if (searchTerm == null || searchTerm.isBlank()) {
+            return java.util.Collections.emptyList();
+        }
+
+        List<Product> products = invoiceService.findProductByName(searchTerm);
         return products.stream().map(p -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", p.getId());
