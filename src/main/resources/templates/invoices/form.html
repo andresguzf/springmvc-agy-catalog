@@ -27,6 +27,19 @@
             <!-- Form -->
             <form th:action="@{/admin/invoices/form}" th:object="${invoice}" method="post" id="invoiceForm" class="space-y-8 pt-6">
                 
+                <!-- Read-Only Issuing Company Info Card -->
+                <div th:if="${company != null}" class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 block">Empresa Emisora</span>
+                        <span class="font-bold text-slate-200 text-sm block" th:text="${company.name}">TIENDA ONLINE E-COMMERCE</span>
+                        <span class="text-slate-400 font-mono block" th:text="${'RUT: ' + company.taxId}">RUT: 76.543.210-9</span>
+                    </div>
+                    <div class="space-y-1 sm:text-right text-slate-400">
+                        <span class="block" th:text="${company.address}">Av. Principal 123, Santiago, Chile</span>
+                        <span class="block font-mono" th:text="${'Teléfono: ' + company.phone}">Tel: +56 9 1234 5678</span>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                     <!-- Customer Name -->

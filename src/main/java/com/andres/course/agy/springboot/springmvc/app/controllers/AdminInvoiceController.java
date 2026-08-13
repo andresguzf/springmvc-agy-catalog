@@ -51,13 +51,16 @@ public class AdminInvoiceController {
     private final InvoiceService invoiceService;
     private final UserService userService;
     private final com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository productRepository;
+    private final com.andres.course.agy.springboot.springmvc.app.services.CompanyService companyService;
 
     public AdminInvoiceController(InvoiceService invoiceService,
                                  UserService userService,
-                                 com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository productRepository) {
+                                 com.andres.course.agy.springboot.springmvc.app.repositories.ProductRepository productRepository,
+                                 com.andres.course.agy.springboot.springmvc.app.services.CompanyService companyService) {
         this.invoiceService = invoiceService;
         this.userService = userService;
         this.productRepository = productRepository;
+        this.companyService = companyService;
     }
 
     @GetMapping
@@ -91,6 +94,7 @@ public class AdminInvoiceController {
 
         model.addAttribute("title", "Emitir Nueva Factura");
         model.addAttribute("invoice", invoice);
+        model.addAttribute("company", companyService.getCompany());
 
         return "invoices/form";
     }
@@ -135,12 +139,14 @@ public class AdminInvoiceController {
             model.addAttribute("error", "Error: La factura debe incluir al menos un producto.");
             model.addAttribute("title", "Emitir Nueva Factura");
             model.addAttribute("selectedItems", selectedItems);
+            model.addAttribute("company", companyService.getCompany());
             return "invoices/form";
         }
 
         if (result.hasErrors()) {
             model.addAttribute("title", "Emitir Nueva Factura");
             model.addAttribute("selectedItems", selectedItems);
+            model.addAttribute("company", companyService.getCompany());
             return "invoices/form";
         }
 
@@ -157,6 +163,7 @@ public class AdminInvoiceController {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("title", "Emitir Nueva Factura");
             model.addAttribute("selectedItems", selectedItems);
+            model.addAttribute("company", companyService.getCompany());
             return "invoices/form";
         }
     }
@@ -203,14 +210,17 @@ public class AdminInvoiceController {
             return "redirect:/admin/invoices";
         }
 
+        com.andres.course.agy.springboot.springmvc.app.models.Company company = companyService.getCompany();
+
         // Export to PDF if requested
         if ("pdf".equalsIgnoreCase(format)) {
-            generateInvoicePdf(invoice, response);
+            generateInvoicePdf(invoice, company, response);
             return null;
         }
 
         model.addAttribute("title", "Detalle de Factura N° " + invoice.getId());
         model.addAttribute("invoice", invoice);
+        model.addAttribute("company", company);
 
         return "invoices/view";
     }
@@ -240,7 +250,7 @@ public class AdminInvoiceController {
         return "redirect:/admin/invoices";
     }
 
-    private void generateInvoicePdf(Invoice invoice, HttpServletResponse response) {
+    private void generateInvoicePdf(Invoice invoice, com.andres.course.agy.springboot.springmvc.app.models.Company company, HttpServletResponse response) {
         try {
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "attachment; filename=factura_" + invoice.getId() + ".pdf");
@@ -264,10 +274,10 @@ public class AdminInvoiceController {
 
             PdfPCell cellLeft = new PdfPCell();
             cellLeft.setBorder(PdfPCell.NO_BORDER);
-            cellLeft.addElement(new Paragraph("TIENDA ONLINE E-COMMERCE", fontTitle));
-            cellLeft.addElement(new Paragraph("RUT Empresa: 76.543.210-9", fontBody));
-            cellLeft.addElement(new Paragraph("Dirección: Av. Principal 123, Santiago, Chile", fontBody));
-            cellLeft.addElement(new Paragraph("Teléfono: +56 9 1234 5678", fontBody));
+            cellLeft.addElement(new Paragraph(company != null ? company.getName() : "TIENDA ONLINE E-COMMERCE", fontTitle));
+            cellLeft.addElement(new Paragraph("RUT Empresa: " + (company != null ? company.getTaxId() : "76.543.210-9"), fontBody));
+            cellLeft.addElement(new Paragraph("Dirección: " + (company != null ? company.getAddress() : "Av. Principal 123, Santiago, Chile"), fontBody));
+            cellLeft.addElement(new Paragraph("Teléfono: " + (company != null ? company.getPhone() : "+56 9 1234 5678"), fontBody));
 
             PdfPCell cellRight = new PdfPCell();
             cellRight.setBorder(PdfPCell.BOX);

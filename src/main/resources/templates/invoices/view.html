@@ -40,11 +40,14 @@
                             🛡️
                         </div>
                         <div>
-                            <h2 class="text-xl font-extrabold text-slate-100">TIENDA ONLINE E-COMMERCE</h2>
-                            <p class="text-xs text-slate-400 font-mono">RUT Empresa: 76.543.210-9</p>
+                            <h2 class="text-xl font-extrabold text-slate-100" th:text="${company != null ? company.name : 'TIENDA ONLINE E-COMMERCE'}">TIENDA ONLINE E-COMMERCE</h2>
+                            <p class="text-xs text-slate-400 font-mono" th:text="${'RUT Empresa: ' + (company != null ? company.taxId : '76.543.210-9')}">RUT Empresa: 76.543.210-9</p>
                         </div>
                     </div>
-                    <p class="text-xs text-slate-400">Av. Principal 123, Santiago, Chile &bull; Tel: +56 9 1234 5678</p>
+                    <p class="text-xs text-slate-400">
+                        <span th:text="${company != null ? company.address : 'Av. Principal 123, Santiago, Chile'}">Av. Principal 123</span>
+                        &bull; Tel: <span th:text="${company != null ? company.phone : '+56 9 1234 5678'}">+56 9 1234 5678</span>
+                    </p>
                 </div>
 
                 <!-- Invoice Number Box -->

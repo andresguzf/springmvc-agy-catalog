@@ -19,13 +19,17 @@ Aplicación Java monolítica construida con **Spring Boot 4.1.0**, **Spring Web 
 - **Aislamiento por Rol**: Los usuarios `BILLING` gestionan únicamente sus facturas emitidas, mientras que el usuario `ADMIN` supervisa la totalidad de los comprobantes del sistema.
 - **Exportación Nativa a PDF**: Integración con **OpenPDF** (`GET /admin/invoices/view/{id}?format=pdf`) para descargar comprobantes de venta oficiales con membrete empresarial y tabla de detalles.
 
-### 📦 3. Administración de Productos (`/admin/products`) y Usuarios (`/admin/users`)
+### 🏢 3. Administración de Datos Corporativos de la Empresa (`/admin/company`)
+- **Gestión Exclusiva para Administradores**: Formulario en `/admin/company` para configurar Razón Social, RUT/Id Fiscal, Dirección, Teléfono, Email y Sitio Web.
+- **Poblado Automático e Inmutable en Facturación**: Los datos corporativos se pueblan automáticamente en la cabecera de las facturas (vista web y documento PDF). Para los usuarios emisores (`BILLING`), esta información es de solo lectura y no modificable.
+
+### 📦 4. Administración de Productos (`/admin/products`) y Usuarios (`/admin/users`)
 - **CRUD Completo con Paginación (`PageRender`)**: Gestión paginada de catálogo y usuarios.
 - **Carga de Imágenes**: Integración con Cloudinary SDK para la subida de imágenes de productos.
 - **Edición de Usuarios**: Validación de contraseñas obligatoria al crear y **opcional al editar**, preservando la contraseña encriptada si el campo se deja en blanco. Preservación de roles seleccionados ante errores de formulario.
 - **Diálogos SweetAlert2**: Diálogos interactivos con diseño glassmorphism modo oscuro para confirmaciones de eliminación y alertas de protección.
 
-### 🛒 4. Catálogo Público y Carrito de Compras
+### 🛒 5. Catálogo Público y Carrito de Compras
 - Catálogo público accesible (`/index`) con detalle de productos, carrito de compras en sesión (`/cart`) y proceso de registro (`/register`).
 
 ---

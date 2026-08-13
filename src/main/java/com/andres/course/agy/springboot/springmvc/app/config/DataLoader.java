@@ -20,18 +20,34 @@ public class DataLoader implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final com.andres.course.agy.springboot.springmvc.app.repositories.CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataLoader(ProductRepository productRepository, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public DataLoader(ProductRepository productRepository,
+                      UserRepository userRepository,
+                      RoleRepository roleRepository,
+                      com.andres.course.agy.springboot.springmvc.app.repositories.CompanyRepository companyRepository,
+                      PasswordEncoder passwordEncoder) {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.companyRepository = companyRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        if (companyRepository.count() == 0) {
+            companyRepository.save(new com.andres.course.agy.springboot.springmvc.app.models.Company(
+                    "TIENDA ONLINE E-COMMERCE",
+                    "76.543.210-9",
+                    "Av. Principal 123, Santiago, Chile",
+                    "+56 9 1234 5678",
+                    "contacto@tienda.com",
+                    "www.tienda.com"
+            ));
+        }
         Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseGet(() -> roleRepository.save(new Role("ROLE_ADMIN")));
         Role billingRole = roleRepository.findByName("ROLE_BILLING").orElseGet(() -> roleRepository.save(new Role("ROLE_BILLING")));
         Role userRole = roleRepository.findByName("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));

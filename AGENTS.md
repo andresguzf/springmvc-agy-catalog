@@ -41,10 +41,10 @@ La aplicación sigue una arquitectura en capas limpia:
 src/main/java/com/andres/course/agy/springboot/springmvc/app/
 ├── Application.java
 ├── config/                          # Seguridad (SpringSecurityConfig), DataLoader, CloudinaryConfig
-├── controllers/                     # AdminUserController, AdminProductController, AdminInvoiceController, CartController, HomeController, etc.
-├── models/                          # User, Role, Product, Invoice, InvoiceItem
-├── repositories/                    # UserRepository, RoleRepository, ProductRepository, InvoiceRepository
-├── services/                        # UserService, ProductService, InvoiceService, CartService, CloudinaryService
+├── controllers/                     # AdminUserController, AdminProductController, AdminInvoiceController, AdminCompanyController, CartController, HomeController, etc.
+├── models/                          # User, Role, Product, Invoice, InvoiceItem, Company
+├── repositories/                    # UserRepository, RoleRepository, ProductRepository, InvoiceRepository, CompanyRepository
+├── services/                        # UserService, ProductService, InvoiceService, CompanyService, CartService, CloudinaryService
 └── util/                            # PageRender (paginación)
 ```
 
@@ -58,6 +58,10 @@ src/main/java/com/andres/course/agy/springboot/springmvc/app/
 2. **Protección del Único Administrador (Zero-Admin Prevention):**
    - La aplicación debe asegurar que exista siempre al menos un usuario activo con `ROLE_ADMIN`.
    - Se verifica mediante `userService.countActiveAdmins()`. Si el contador es `<= 1`, el sistema prohíbe quitarle el rol de admin, desactivar o eliminar a dicho usuario (tanto en UI como en backend).
+
+3. **Gestión de Datos Corporativos de la Empresa (`Company`):**
+   - La información de la empresa (Nombre/Razón Social, RUT/Id Fiscal, Dirección, Teléfono, Email) se gestiona exclusivamente por usuarios con `ROLE_ADMIN` a través de `/admin/company`.
+   - Al crear o consultar facturas y generar documentos PDF en OpenPDF, la aplicación puebla dinámicamente estos datos en los membretes oficiales. Los usuarios emisores (`ROLE_BILLING`) los visualizan como información fija no editable.
 
 3. **Gestión de Contraseña en Edición de Usuarios:**
    - La contraseña es obligatoria al crear un nuevo usuario (`isNew == true`), pero opcional al editar (`isNew == false`). Si el campo queda en blanco al editar, se preserva el hash BCrypt existente.
