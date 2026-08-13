@@ -92,6 +92,29 @@
                         Módulos Principales
                     </div>
 
+                    <!-- My Orders Link -->
+                    <a sec:authorize="isAuthenticated()"
+                       th:href="@{/user/orders}"
+                       th:class="${activeSection == 'my-orders' ? 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-sm transition shadow-sm' : 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 font-medium text-sm transition'}">
+                        <span class="text-lg flex-shrink-0">🛍️</span>
+                        <span class="sidebar-text">Mis Compras</span>
+                    </a>
+
+                    <!-- Checkout / Finalizar Compra Link -->
+                    <a sec:authorize="isAuthenticated()"
+                       th:href="@{/cart/checkout}"
+                       th:class="${activeSection == 'checkout' ? 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-sm transition shadow-sm' : 'sidebar-nav-item flex items-center gap-3 px-3.5 py-3 rounded-xl hover:bg-slate-800/80 text-slate-400 hover:text-slate-200 font-medium text-sm transition'}">
+                        <span class="text-lg flex-shrink-0">🛒</span>
+                        <span class="sidebar-text flex items-center justify-between w-full">
+                            <span>Finalizar Compra</span>
+                            <span th:if="${@cart.totalQuantity gt 0}"
+                                  th:text="${@cart.totalQuantity}"
+                                  class="px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-extrabold text-[10px] font-mono shadow-md">
+                                0
+                            </span>
+                        </span>
+                    </a>
+
                     <!-- Products Link (Admin) -->
                     <a sec:authorize="hasRole('ADMIN')"
                        th:href="@{/admin/products}"
@@ -170,8 +193,14 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a th:href="@{/index}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-bold border border-slate-700 transition flex items-center gap-1.5">
-                        🛒 Ir al Catálogo Público
+                    <a th:href="@{/cart/checkout}" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5 shadow-md">
+                        🛒 Finalizar Compra
+                        <span th:if="${@cart.totalQuantity gt 0}"
+                              th:text="${@cart.totalQuantity}"
+                              class="px-1.5 py-0.2 rounded-full bg-slate-950 text-emerald-400 font-mono text-[10px]">0</span>
+                    </a>
+                    <a th:href="@{/index}" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold border border-slate-700 transition flex items-center gap-1.5">
+                        📦 Catálogo Público
                     </a>
                 </div>
             </header>
