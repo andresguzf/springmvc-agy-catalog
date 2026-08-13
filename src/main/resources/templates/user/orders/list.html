@@ -8,78 +8,68 @@
 </head>
 <body>
 
-    <main class="space-y-6 max-w-6xl mx-auto">
+    <main class="space-y-6">
 
-        <!-- Header Card Banner -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/80 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-2xl backdrop-blur">
-            <div class="space-y-1">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-1">
-                    🛍️ Historial de Compras
-                </div>
-                <h1 class="text-2xl font-extrabold text-slate-100 tracking-tight">Mis Órdenes y Comprobantes</h1>
-                <p class="text-slate-400 text-xs">Consulta las compras que has realizado en la plataforma y descarga tus comprobantes en PDF.</p>
-            </div>
-            
-            <a th:href="@{/index}" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
-                📦 Ir a Comprar
-            </a>
-        </div>
-
-        <!-- Orders Table Container -->
-        <div class="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl backdrop-blur">
-            
-            <div th:if="${#lists.isEmpty(invoices)}" class="p-12 text-center space-y-4">
-                <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-800 flex items-center justify-center text-3xl">
-                    🛍️
-                </div>
-                <h3 class="text-lg font-bold text-slate-200">Aún no has realizado ninguna compra</h3>
-                <p class="text-slate-400 text-xs max-w-sm mx-auto">
-                    Cuando realices pedidos en la tienda, aparecerán aquí para que puedas consultar sus detalles y descargar tus facturas en PDF.
+        <!-- Page Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div>
+                <h1 class="text-2xl font-black tracking-tight text-slate-100 flex items-center gap-2">
+                    <span>🛍️</span> Mis Compras e Historial
+                </h1>
+                <p class="text-xs text-slate-400 mt-1">
+                    Consulta el historial de tus órdenes de compra web, su estado de facturación y descarga tus comprobantes.
                 </p>
-                <a th:href="@{/index}" class="inline-block px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition">
-                    Explorar Productos
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a th:href="@{/index}"
+                   class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-white border border-slate-700 text-xs font-bold transition flex items-center gap-2">
+                    🛒 Volver a la Tienda
                 </a>
             </div>
+        </div>
 
-            <div th:unless="${#lists.isEmpty(invoices)}" class="overflow-x-auto">
+        <!-- Orders Table Card -->
+        <div class="bg-slate-900/90 border border-slate-800/80 rounded-3xl overflow-hidden shadow-2xl backdrop-blur">
+            <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm text-slate-300">
                     <thead class="bg-slate-950 text-xs uppercase tracking-wider text-slate-400 font-mono border-b border-slate-800">
                         <tr>
                             <th scope="col" class="py-4 px-6">N° Orden</th>
                             <th scope="col" class="py-4 px-6">Fecha</th>
-                            <th scope="col" class="py-4 px-6">Detalles / Despacho</th>
+                            <th scope="col" class="py-4 px-6">Despacho y Pago</th>
                             <th scope="col" class="py-4 px-6 text-center">Estado</th>
                             <th scope="col" class="py-4 px-6 text-right">Total</th>
                             <th scope="col" class="py-4 px-6 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800/60 font-sans">
-                        <tr th:each="invoice : ${invoices}" class="hover:bg-slate-800/40 transition">
+                        <tr th:each="order : ${orders}" class="hover:bg-slate-800/40 transition">
                             <!-- Order ID -->
                             <td class="py-4 px-6 font-mono font-bold text-emerald-400 whitespace-nowrap"
-                                th:text="${'N° ' + #numbers.formatInteger(invoice.id, 6)}">
+                                th:text="${'N° ' + #numbers.formatInteger(order.id, 6)}">
                                 N° 000001
                             </td>
 
                             <!-- Date -->
                             <td class="py-4 px-6 font-mono text-xs text-slate-400 whitespace-nowrap"
-                                th:text="${invoice.createdAt != null ? #temporals.format(invoice.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}">
+                                th:text="${order.createdAt != null ? #temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm') : 'N/A'}">
                                 12/08/2026 20:00
                             </td>
 
-                            <!-- Description -->
+                            <!-- Shipping & Payment -->
                             <td class="py-4 px-6 max-w-xs">
-                                <span class="font-bold text-slate-100 block text-xs truncate" th:text="${invoice.description}">Orden Web</span>
-                                <span class="text-[11px] text-slate-400 block truncate" th:text="${invoice.observation}">Detalles</span>
+                                <span class="font-bold text-slate-100 block text-xs truncate" th:text="${order.shippingMethod}">Envío Estándar</span>
+                                <span class="text-[11px] text-slate-400 block truncate" th:text="${order.paymentMethod}">Tarjeta Webpay</span>
                             </td>
 
                             <!-- Order Status Badge -->
                             <td class="py-4 px-6 text-center whitespace-nowrap">
-                                <span th:if="${invoice.status == 'FACTURADO'}"
+                                <span th:if="${order.status == 'FACTURADO'}"
                                       class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                     ✅ FACTURADO
                                 </span>
-                                <span th:unless="${invoice.status == 'FACTURADO'}"
+                                <span th:unless="${order.status == 'FACTURADO'}"
                                       class="px-2.5 py-1 rounded-full text-xs font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
                                     ⏳ EN PROCESO
                                 </span>
@@ -87,30 +77,39 @@
 
                             <!-- Total -->
                             <td class="py-4 px-6 text-right font-mono font-extrabold text-slate-100 text-sm whitespace-nowrap"
-                                th:text="${'$' + #numbers.formatDecimal(invoice.total, 1, 'POINT', 2, 'COMMA')}">
+                                th:text="${'$' + #numbers.formatDecimal(order.total, 1, 'POINT', 2, 'COMMA')}">
                                 $0.00
                             </td>
 
                             <!-- Actions -->
                             <td class="py-4 px-6 text-center whitespace-nowrap">
                                 <div class="inline-flex items-center gap-2">
-                                    <a th:href="@{/user/orders/view/{id}(id=${invoice.id})}"
+                                    <a th:href="@{/user/orders/view/{id}(id=${order.id})}"
                                        class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition flex items-center gap-1">
                                         👁️ Ver Detalle
                                     </a>
 
-                                    <a th:if="${invoice.status == 'FACTURADO'}"
-                                       th:href="@{/user/orders/view/{id}(id=${invoice.id}, format='pdf')}"
+                                    <a th:if="${order.status == 'FACTURADO' and order.invoice != null}"
+                                       th:href="@{/user/orders/view/{id}(id=${order.id}, format='pdf')}"
                                        class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs transition flex items-center gap-1 shadow-md"
                                        title="Descargar Factura Oficial PDF">
                                         📄 Factura PDF
                                     </a>
-                                    <span th:unless="${invoice.status == 'FACTURADO'}"
+                                    <span th:unless="${order.status == 'FACTURADO' and order.invoice != null}"
                                           class="px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-500 text-xs font-medium cursor-not-allowed"
                                           title="La factura estará disponible en PDF una vez sea emitida por administración">
                                         ⏳ Pendiente Factura
                                     </span>
                                 </div>
+                            </td>
+                        </tr>
+
+                        <!-- Empty State -->
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="6" class="py-12 text-center text-slate-400 space-y-3">
+                                <div class="text-4xl">🛍️</div>
+                                <p class="text-base font-medium">Aún no has realizado ninguna compra.</p>
+                                <a th:href="@{/index}" class="inline-block px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">Ir a la Tienda</a>
                             </td>
                         </tr>
                     </tbody>
