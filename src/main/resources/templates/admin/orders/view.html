@@ -16,16 +16,23 @@
             </a>
 
             <div class="flex items-center gap-3">
+                <!-- Order PDF -->
+                <a th:href="@{/user/orders/view/{id}(id=${order.id}, format='order-pdf')}"
+                   class="px-5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition flex items-center gap-2">
+                    📄 Descargar Orden PDF
+                </a>
+
                 <a th:unless="${order.status == 'FACTURADO'}"
                    th:href="@{/admin/orders/emit/{id}(id=${order.id})}"
                    class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
                     ⚡ Convertir y Emitir Factura Oficial
                 </a>
 
+                <!-- Invoice PDF if converted -->
                 <a th:if="${order.status == 'FACTURADO' and order.invoice != null}"
-                   th:href="@{/admin/invoices/view/{id}(id=${order.invoice.id})}"
-                   class="px-5 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500 hover:text-slate-950 font-bold text-xs transition flex items-center gap-2">
-                    🧾 Ver Factura Emitida N° <span th:text="${order.invoice.id}">1</span>
+                   th:href="@{/admin/invoices/view/{id}(id=${order.invoice.id}, format='pdf')}"
+                   class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-600/20 transition flex items-center gap-2">
+                    🧾 Descargar Factura N° <span th:text="${order.invoice.id}">1</span> (PDF)
                 </a>
 
                 <button type="button" onclick="window.print()"

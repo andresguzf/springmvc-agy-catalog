@@ -89,11 +89,19 @@
                                         👁️ Ver Detalle
                                     </a>
 
+                                    <!-- Order PDF Download (Always Available) -->
+                                    <a th:href="@{/user/orders/view/{id}(id=${order.id}, format='order-pdf')}"
+                                       class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition flex items-center gap-1"
+                                       title="Descargar Comprobante de Orden de Compra PDF">
+                                        📄 Orden PDF
+                                    </a>
+
+                                    <!-- Official Invoice PDF Download (Available when Facturado) -->
                                     <a th:if="${order.status == 'FACTURADO' and order.invoice != null}"
-                                       th:href="@{/user/orders/view/{id}(id=${order.id}, format='pdf')}"
-                                       class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs transition flex items-center gap-1 shadow-md"
+                                       th:href="@{/user/orders/view/{id}(id=${order.id}, format='invoice-pdf')}"
+                                       class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs transition flex items-center gap-1 shadow-md"
                                        title="Descargar Factura Oficial PDF">
-                                        📄 Factura PDF
+                                        🧾 Factura PDF
                                     </a>
                                     <span th:unless="${order.status == 'FACTURADO' and order.invoice != null}"
                                           class="px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700 text-slate-500 text-xs font-medium cursor-not-allowed"

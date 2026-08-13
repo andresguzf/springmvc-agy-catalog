@@ -93,6 +93,12 @@
                                         👁️ Revisar
                                     </a>
 
+                                    <a th:href="@{/user/orders/view/{id}(id=${order.id}, format='order-pdf')}"
+                                       class="px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-slate-950 font-bold text-xs transition"
+                                       title="Descargar Comprobante de Orden PDF">
+                                        📄 Orden PDF
+                                    </a>
+
                                     <a th:unless="${order.status == 'FACTURADO'}"
                                        th:href="@{/admin/orders/emit/{id}(id=${order.id})}"
                                        class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs transition shadow-md"
@@ -101,10 +107,10 @@
                                     </a>
 
                                     <a th:if="${order.status == 'FACTURADO' and order.invoice != null}"
-                                       th:href="@{/admin/invoices/view/{id}(id=${order.invoice.id})}"
-                                       class="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-slate-950 font-bold text-xs transition"
-                                       title="Ver Factura Oficial Asociada">
-                                        🧾 Ver Factura N° <span th:text="${order.invoice.id}">1</span>
+                                       th:href="@{/admin/invoices/view/{id}(id=${order.invoice.id}, format='pdf')}"
+                                       class="px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-600 hover:text-white font-bold text-xs transition"
+                                       title="Descargar Factura Oficial PDF">
+                                        🧾 Factura PDF
                                     </a>
 
                                     <button sec:authorize="hasRole('ADMIN')"
